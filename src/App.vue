@@ -15,9 +15,9 @@ useHead({
 </template>
 
 <style>
-/* html {
+html {
   overflow-y: hidden;
-} */
+}
 
 *::-webkit-scrollbar {
   width: 7px;

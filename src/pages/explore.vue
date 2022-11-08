@@ -22,8 +22,6 @@ const router: Router = useRouter();
 onBeforeRouteUpdate((route) => {
   // console.log(route.to)
 })
-
-
 </script>
 
 <template>
