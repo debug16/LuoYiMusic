@@ -18,19 +18,19 @@ const route = useRoute()
         <span>首页</span>
       </div>
       <div @click="router.push('/explore')" :class="{ active: route.path === '/explore' }">
-      <span>发现</span>
-        
+        <span>发现</span>
       </div>
-      <div><span>音乐库</span></div>
+      <div @click="router.push('/musicLibrary')">
+        <span>音乐库</span>
+      </div>
     </div>
     <div class="right" flex="~" space-x-3 w="1/4" justify-end>
       <div class="search">
-        <input type="text" h-8 rounded-md placeholder="search" px-2 bg="#333333" outline-none>
+        <input type="text" h-8 rounded-md placeholder="search" px-2 bg="#333333" outline-none />
       </div>
       <div class="headPortrait">
         <div w-8 h-8>
-          <img src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" alt=""
-            rounded="50%">
+          <img src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" alt="" rounded="50%" />
         </div>
       </div>
     </div>
@@ -39,10 +39,10 @@ const route = useRoute()
 
 <style scoped>
 .icon {
-  @apply cursor-pointer hover:bg-#444 rounded-lg p-1
+  @apply cursor-pointer rounded-lg p-1 hover:bg-[#444];
 }
 
-.center div {
+.center > div {
   @apply cursor-pointer hover:color-blue-600
 }
 
