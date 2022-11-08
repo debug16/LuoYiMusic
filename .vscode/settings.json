@@ -1,0 +1,45 @@
+{
+  "cSpell.words": [
+    "alia",
+    "antfu",
+    "demi",
+    "iconify",
+    "intlify",
+    "nprogress",
+    "pinia",
+    "pnpm",
+    "typecheck",
+    "unocss",
+    "unplugin",
+    "Vite",
+    "vitejs",
+    "Vitesse",
+    "vitest",
+    "vueuse"
+  ],
+  "i18n-ally.sourceLanguage": "zh-CN",
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.localesPaths": "locales",
+  "i18n-ally.sortKeys": true,
+  "prettier.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  // "editor.fontFamily": "Input Mono, Fira Code, monospace",
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // "css.validate": false,
+  // "windicss.colorDecoratorsType": "cube",
+  "css.lint.unknownAtRules": "ignore", // 未知的 @ 规则。
+  "prettier.printWidth": 200,
+  "editor.formatOnSave": false,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "i18n-ally.extract.ignoredByFiles": {
+    "src\\pages\\playlist\\[id].vue": [
+      "songs.fee !== 0 && songs.fee !== 8 ? 'Only VIP Can Play' : ''"
+    ]
+  },
+  // "windicss.enableCodeFolding":true
+}

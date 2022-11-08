@@ -1,13 +1,20 @@
 <script setup lang="ts">
 // footer是否隐藏
 let footerHide = $ref(true)
+// 标记是否显示全屏播放器
+let isFullScreenPlayer = $ref(false)
 
 // 更新footer隐藏状态
 const updateFooterHide = () => {
   footerHide = false
 }
+const updateIsFullScreenPlayer = () => {
+  isFullScreenPlayer = true
+}
+
 // 提供给外部的方法和属性
 provide('footerHide', { footerHide, updateFooterHide })
+provide('isFullScreenPlayer', { isFullScreenPlayer, updateIsFullScreenPlayer })
 </script>
 
 <template>
@@ -17,10 +24,12 @@ provide('footerHide', { footerHide, updateFooterHide })
   </div>
   <!-- 主体内容 -->
   <main class="text-gray-200 main">
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <component :is="Component"></component>
+    </RouterView>
   </main>
   <!-- 尾部内容 -->
-  <div :class="{ hide: footerHide }" transition-all class="footer" bg="#222222/95" h-65px>
+  <div :class="{ slideUp: footerHide }" transition-transform class="footer" bg="#222222/95" h-65px>
     <Footer />
   </div>
 </template>
@@ -47,6 +56,15 @@ main {
   bottom: 0;
 }
 
+.header,
+.main,
+.footer {
+  @apply xl:px-10%
+}
+
+.slideUp {
+  @apply translate-y-100%
+}
 .header::after,
 .footer::after {
   content: '';
@@ -57,16 +75,6 @@ main {
   bottom: 0;
   left: 0;
   z-index: -1;
-  @apply filter:blur(1px) bg-#222/90 
-}
-
-.header,
-.main,
-.footer {
-  @apply xl: px-10%
-}
-
-.hide {
-  @apply translate-y-100%
+  @apply filter:blur(1px) bg-#222/90
 }
 </style>

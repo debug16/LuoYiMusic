@@ -3,7 +3,10 @@
     "baseUrl": ".",
     "module": "ESNext",
     "target": "ESNext",
-    "lib": ["DOM", "ESNext"],
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "jsx": "preserve",
@@ -20,8 +23,14 @@
       "vite-plugin-vue-layouts/client"
     ],
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": [
+        "src/*"
+      ]
     }
   },
-  "exclude": ["dist", "node_modules", "cypress"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "cypress"
+  ]
 }
