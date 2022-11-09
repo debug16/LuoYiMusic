@@ -126,6 +126,10 @@ const activeLyricIndex = (time: number) => {
   )
 }
 
+const clickLyric = (i: number) => {
+  audio.currentTime = lyricsInfo.lyrics[i].time+0.01
+}
+
 // 播放时间变化事件
 const timeUpdate = (e: any) => {
   audioInfo.currentTime = e.target.currentTime
@@ -134,7 +138,7 @@ const timeUpdate = (e: any) => {
   // 获取当前歌词索引
   const index = activeLyricIndex(audioInfo.currentTime)
   const len = lyricsInfo.lyrics.length
-  lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1  
+  lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1
 }
 
 // 监听播放音乐的 id
@@ -261,10 +265,19 @@ const changePlayTime = () => {
         </div>
       </div>
       <!-- 歌词 -->
-      <div class="player__lyrics" shrink-0  w="1/2" ref="lyricsRef">
+      <div class="player__lyrics" shrink-0 w="1/2" ref="lyricsRef">
         <div class="lyrics__container" ref="lyricConRef">
           <!-- <template > -->
-          <div v-for="(lyrics, index) in lyricsInfo.lyrics" :key="index" :data-lyric-index="index" :class="{ lyricActive: lyricsInfo.lyricsIndex === index }" :data-lyric-time="lyrics.time">
+          <div
+            v-for="(lyrics, index) in lyricsInfo.lyrics"
+            :key="index"
+            @click="clickLyric(index)"
+            :data-lyric-index="index"
+            :data-lyric-fTime="formateTime(lyrics.time)"
+            :class="{ lyricActive: lyricsInfo.lyricsIndex === index }"
+            hover="bg-#ccc/8 rounded-5"
+            :data-lyric-time="lyrics.time"
+          >
             {{ lyrics.text }}
           </div>
           <!-- </template> -->
@@ -273,7 +286,7 @@ const changePlayTime = () => {
     </div>
   </div>
   <div h-full>
-    <footer class="footer" color="#fff" h-full>
+    <footer class="footer" color="#fff" h-full @click="isFullScreenPlayer = true">
       <div flex="~" justify-between items-center color-white h-full>
         <div class="left" flex="~" text-2xl space-x-3 w="1/3">
           <div h-50px w-50px flex="shrink-0" class="footer__music--img">
@@ -292,19 +305,19 @@ const changePlayTime = () => {
         </div>
         <div class="center" flex="~" items-center space-x6 text-lg font-800>
           <!-- 上一首 -->
-          <div class="icon" @click="prevPlayMusic">
+          <div class="icon" @click.stop="prevPlayMusic">
             <div i-carbon:skip-back-filled />
           </div>
           <!-- 播放 -->
-          <div v-show="isPlaying" class="icon" @click="stopPlayMusic">
+          <div v-show="isPlaying" class="icon" @click.stop="stopPlayMusic">
             <div i-carbon:pause-filled w-8 h-8 />
           </div>
           <!-- 暂停 -->
-          <div v-show="!isPlaying" class="icon" @click="playMusic">
+          <div v-show="!isPlaying" class="icon" @click.stop="playMusic">
             <div i-carbon:play-filled-alt w-8 h-8 />
           </div>
           <!-- 下一首 -->
-          <div class="icon" @click="nextPlayMusic">
+          <div class="icon" @click.stop="nextPlayMusic">
             <div i-carbon:skip-forward-filled />
           </div>
         </div>
@@ -340,20 +353,23 @@ const changePlayTime = () => {
 .player__lyrics {
   @apply relative overflow-auto;
 }
-.player__lyrics::-webkit-scrollbar-thumb{
-  display: none
+.player__lyrics::-webkit-scrollbar-thumb {
+  display: none;
 }
 .player__lyrics .play__container {
   @apply h-14 relative -translate-y-50% top-50% border-light-50 border w-full
 }
 
 .lyrics__container {
-  @apply py-50vh;
+  @apply pt-48vh pb-52vh;
 }
 .lyrics__container div {
-  @apply  text-2xl color-#7F7F7F font-bold py-6
+  @apply text-2xl color-#7F7F7F font-bold py-6 px-4 relative select-none
 }
-
+.lyrics__container div:hover:after {
+  content: attr(data-lyric-fTime);
+  @apply absolute top-1 right-6 text-base;
+}
 .lyrics__container .lyricActive {
   @apply color-#fff  text-7 transition-all
 }
