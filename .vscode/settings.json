@@ -37,9 +37,6 @@
   "prettier.semi": false,
   "prettier.singleQuote": true,
   "i18n-ally.extract.ignoredByFiles": {
-    "src\\pages\\playlist\\[id].vue": [
-      "songs.fee !== 0 && songs.fee !== 8 ? 'Only VIP Can Play' : ''"
-    ]
   },
   // "windicss.enableCodeFolding":true
 }

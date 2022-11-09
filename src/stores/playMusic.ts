@@ -19,8 +19,7 @@ export const usePlayMusicStore = defineStore('playMusic', {
         // 播放时间
         time: 0,
         // 歌词
-        lyric: {
-        },
+        lyric: [{ time: 0, text: '' }]
       },
       // 播放列表
       playList: [],
@@ -75,6 +74,10 @@ export const usePlayMusicStore = defineStore('playMusic', {
         return null
       return index !== 0 ? state.playList[index - 1] : state.playList[state.playList.length - 1]
     },
+    // 获取歌词
+    getLyric(state: any) {
+      return state.activePlayMusic.lyric
+    }
   },
   actions: {
     // 设置播放的音乐 id
@@ -89,6 +92,10 @@ export const usePlayMusicStore = defineStore('playMusic', {
     setPlayMusicList(playList: any) {
       this.playList = playList
     },
+    // 设置歌词
+    setLyric(lyric: string) {
+      this.activePlayMusic.lyric = lyric
+    }
   },
 })
 

@@ -2,6 +2,8 @@
 import { usePlayMusicStore } from '~/stores/playMusic'
 import { isSongsFree } from '~/utils/songs'
 import { formateTime } from '~/utils/time'
+import { formatLyric } from '~/utils/lyric'
+import { lyric } from '~/api/lyric'
 
 const playMusicStore = usePlayMusicStore()
 
@@ -15,6 +17,11 @@ const audioInfo = reactive({
   musicOverTime: '00:00',
   // 当前播放到的时间
   musicCurrentTime: '00:00',
+})
+
+let lyricsInfo = reactive({
+  lyrics: [{ time: 0, text: '' }],
+  lyricsIndex: 0,
 })
 
 // 播放进度条
@@ -99,16 +106,51 @@ const isPlaying = computed(() => {
   return playMusicStore.activePlayMusic.state === 'playing'
 })
 
+let lyricsRef: HTMLDivElement = $ref()
+let lyricConRef: HTMLDivElement = $ref()
+/**
+ * 获取歌词
+ */
+const activeLyricIndex = (time: number) => {
+  return (
+    lyricsInfo.lyrics.findIndex((item, i, obj) => {
+      // 找到当前歌词位置
+      if (item.time >= time) {
+        return true
+      }
+      if (obj.length - 1 === i) {
+        return true
+      }
+      return false
+    }) || 0
+  )
+}
+
 // 播放时间变化事件
 const timeUpdate = (e: any) => {
   audioInfo.currentTime = e.target.currentTime
   audioInfo.musicCurrentTime = formateTime(audioInfo.currentTime) || '00:00'
+
+  // 获取当前歌词索引
+  const index = activeLyricIndex(audioInfo.currentTime)
+  const len = lyricsInfo.lyrics.length
+  lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1  
 }
 
 // 监听播放音乐的 id
 watch(
   () => playMusicStore.activePlayMusic.id,
-  (_value: any, _old: any) => {
+  (_nId: any, _old: any) => {
+    if (_nId) {
+      lyric(_nId).then((res: any) => {
+        if (res.code === 200) {
+          // 格式化保存歌词
+          lyricsInfo.lyrics = formatLyric(res.lrc?.lyric) || [{ time: 0, text: '没有歌词哦' }]
+          playMusicStore.setLyric(lyricsInfo.lyrics)
+        }
+      })
+    }
+
     // 暂停播放
     stopPlayMusic()
 
@@ -119,13 +161,29 @@ watch(
     // }
 
     // 播放栏是否隐藏
-    if (injects?.footerHide) {
+    if (injects?.footerHide && _nId) {
       injects.updateFooterHide() // 如果隐藏则显示
       injects.footerHide = false // 将隐藏状态设置为 false
     }
+  },
+  { immediate: true }
+)
+watch(
+  () => lyricsInfo.lyricsIndex,
+  (nIndex: number, oldIndex: number) => {
+    let HTML = lyricsRef?.querySelector(`div[data-lyric-index="${nIndex}"`) as HTMLDivElement
+    const style: CSSStyleDeclaration = window.getComputedStyle(lyricConRef)
+    const HTMLstyle: CSSStyleDeclaration = window.getComputedStyle(HTML)
+    const pt = parseFloat(style.getPropertyValue('padding-top'))
+    const htmlH = parseFloat(HTMLstyle.getPropertyValue('height'))
+    // TODO 有问题
+    const offsetTop: number = HTML?.offsetTop - pt + htmlH
+    lyricsRef?.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth',
+    })
   }
 )
-
 // 播放音乐的 url
 const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
@@ -142,20 +200,19 @@ const changePlayTime = () => {
   audio.currentTime = (elementX.value / elementWidth.value) * audioInfo.duration
 }
 
-let progressCircleRef = ref(null)
-
-const Draggable = useDraggable(progressCircleRef, {
-  onStart: (p, e) => {
-    console.log('start', e.offsetX, e)
-  },
-  onEnd: (p, e) => {
-    console.log('end', e.offsetX, e)
-  },
-})
+// let progressCircleRef = ref(null)
+// const Draggable = useDraggable(progressCircleRef, {
+//   onStart: (p, e) => {
+//     console.log('start', e.offsetX, e)
+//   },
+//   onEnd: (p, e) => {
+//     console.log('end', e.offsetX, e)
+//   },
+// })
 </script>
 
 <template>
-  <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform class="fullScreenPlayer" fixed w-100vw h-100vh bg="#9966ff" z-9000 top-0 left-0>
+  <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform class="fullScreenPlayer" fixed w-100vw h-100vh bg="#4D2F29" z-9000 top-0 left-0>
     <div class="player__minimize" absolute i-carbon:chevron-down top-10 right-10 w-10 h-10 color="#ccc" @click="isFullScreenPlayer = false" />
     <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
       <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
@@ -203,7 +260,16 @@ const Draggable = useDraggable(progressCircleRef, {
           </div>
         </div>
       </div>
-      <div class="player__lyrics" shrink-0 bg="#ff9966" w="1/2"></div>
+      <!-- 歌词 -->
+      <div class="player__lyrics" shrink-0  w="1/2" ref="lyricsRef">
+        <div class="lyrics__container" ref="lyricConRef">
+          <!-- <template > -->
+          <div v-for="(lyrics, index) in lyricsInfo.lyrics" :key="index" :data-lyric-index="index" :class="{ lyricActive: lyricsInfo.lyricsIndex === index }" :data-lyric-time="lyrics.time">
+            {{ lyrics.text }}
+          </div>
+          <!-- </template> -->
+        </div>
+      </div>
     </div>
   </div>
   <div h-full>
@@ -254,15 +320,6 @@ const Draggable = useDraggable(progressCircleRef, {
               您的浏览器不支持 audio 元素。
             </audio>
           </div>
-          <!-- <div class="search">
-            <input type="text" h-8 rounded-md placeholder="search" px-2 bg="#333333" outline-none>
-          </div>
-          <div class="headPortrait">
-            <div w-8 h-8>
-              <img src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" alt="" rounded="50%">
-            </div>
-          </div>
-        </div> -->
         </div>
       </div>
     </footer>
@@ -270,7 +327,7 @@ const Draggable = useDraggable(progressCircleRef, {
 </template>
 <style scoped>
 .slideUp {
-  @apply translate-y-100%;
+  @apply translate-y-100%
 }
 
 .progress .progress--circle {
@@ -278,5 +335,26 @@ const Draggable = useDraggable(progressCircleRef, {
 }
 .progress:hover .progress--circle {
   @apply block;
+}
+
+.player__lyrics {
+  @apply relative overflow-auto;
+}
+.player__lyrics::-webkit-scrollbar-thumb{
+  display: none
+}
+.player__lyrics .play__container {
+  @apply h-14 relative -translate-y-50% top-50% border-light-50 border w-full
+}
+
+.lyrics__container {
+  @apply py-50vh;
+}
+.lyrics__container div {
+  @apply  text-2xl color-#7F7F7F font-bold py-6
+}
+
+.lyrics__container .lyricActive {
+  @apply color-#fff  text-7 transition-all
 }
 </style>

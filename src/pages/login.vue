@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .login {
   @apply space-y-8
   transform:scale;
