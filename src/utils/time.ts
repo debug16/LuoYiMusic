@@ -1,4 +1,4 @@
-import isFinite from "lodash/isFinite"
+import isFinite from "lodash/isFinite.js"
 // import type isFinite1 from '@types/lodash/isFinite'
 /**
  * 格式话时间
