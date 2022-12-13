@@ -36,7 +36,9 @@
   "editor.formatOnSave": false,
   "prettier.semi": false,
   "prettier.singleQuote": true,
-  "i18n-ally.extract.ignoredByFiles": {
-  },
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "i18n-ally.extract.ignoredByFiles": {},
   // "windicss.enableCodeFolding":true
 }

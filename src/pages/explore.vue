@@ -32,9 +32,9 @@ onBeforeRouteUpdate((route) => {
     </div>
     <div class="category" mb-6>
       <ul flex>
-        <li v-for="category,i in categoryList" :key="i" bg='#323232' px4 py2 rd-3 mr4 cursor="pointer"
+        <li v-for="category,i in categoryList" color='#7a7a7b' :key="i" bg='#eee/65' hover="color-#335eea bg-#eaeffd" px4 py2 rd-3 mr4 cursor="pointer"
           @click="router.push(`/explore?category=${category}`)">
-          <span inline-block text-lg color='#7a7a7b' font-600>{{category}}</span>
+          <span inline-block text-lg  font-600>{{category}}</span>
         </li>
       </ul>
     </div>
@@ -49,7 +49,7 @@ onBeforeRouteUpdate((route) => {
             </div> -->
           <IconPlay />
         </div>
-        <div class="describe" title="「雨之摇滚·倾听爱与自由乐章」">
+        <div class="describe" color="#000" title="「雨之摇滚·倾听爱与自由乐章」">
           「雨之摇滚·倾听爱与自由乐章」
         </div>
       </div>

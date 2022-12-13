@@ -51,6 +51,12 @@ const onPlayRecommendedList = (playlistId: number) => {
     if (song) playMusicStore.setPlayMusicList(playlist)
   })
 }
+
+const imgUrl = (url: string, param?: number | string) => {
+  param = param ? `?param=${param}y${param}` : ''
+  const img = url ? url + param : ''
+  return img
+}
 </script>
 
 <template>
@@ -58,14 +64,15 @@ const onPlayRecommendedList = (playlistId: number) => {
     <div class="recommend">
       <h1>推荐歌单</h1>
       <div class="recommend__content grid grid-cols-5 grid-flow-row gap-x-4 gap-y-8">
-        <div v-for="(item, i) in recommendSongs" :key="i" cursor-pointer @click="router.push(`/playlist/${item.id}`)">
-          <div class="frontCover" relative>
-            <img :src="`${item.picUrl}?param=512y512`" rounded-xl :alt="item.name" />
-            <div class="play__btn -translate-1/2" bg="#fff/20" hidden hover="bg-#fff/30" p-3 rounded="50%" absolute top="1/2" left="1/2" @click.stop="onPlayRecommendedList(item.id)">
-              <div i-carbon:play-filled-alt w-8 h-8 />
-            </div>
-          </div>
-          <div class="describe" :title="item.name">
+        <div v-for="(item, i) in recommendSongs" :key="i">
+          <Images :src="imgUrl(item.picUrl, 512)" cursor-pointer alt="item.name" @click="router.push(`/playlist/${item.id}`)">
+            <template #content>
+              <div class="play__btn" bg="#fff/20" hidden hover="bg-#fff/30" p-3 rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
+                <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
+              </div>
+            </template>
+          </Images>
+          <div class="describe" cursor-pointer @click="router.push(`/playlist/${item.id}`)" :title="item.name">
             {{ item.name }}
           </div>
         </div>
@@ -78,7 +85,7 @@ const onPlayRecommendedList = (playlistId: number) => {
           <div class="frontCover" relative grow>
             <img :src="`${artist.picUrl}?param=512y512`" rounded="50%" alt="" />
             <div class="play__btn -translate-1/2" hidden bg="#fff/20" hover="bg-#fff/30" p-3 rounded="50%" absolute top="1/2" left="1/2">
-              <div i-carbon:play-filled-alt w-8 h-8 />
+              <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
             </div>
           </div>
           <div class="describe" text-center>
@@ -94,7 +101,7 @@ const onPlayRecommendedList = (playlistId: number) => {
           <div class="frontCover" relative>
             <img :src="`${item.picUrl}?param=512y512`" rounded-xl :alt="item.name" />
             <div class="play__btn -translate-1/2" bg="#fff/20" hidden hover="bg-#fff/30" p-3 rounded="50%" absolute top="1/2" left="1/2" @click.stop="onPlayRecommendedList(item.id)">
-              <div i-carbon:play-filled-alt w-8 h-8 />
+              <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
             </div>
           </div>
           <div class="describe" :title="item.name">
@@ -110,7 +117,7 @@ const onPlayRecommendedList = (playlistId: number) => {
           <div class="frontCover" relative>
             <img :src="`${item.picUrl}?param=512y512`" rounded-xl :alt="item.name" />
             <div class="play__btn -translate-1/2" bg="#fff/20" hidden hover="bg-#fff/30" p-3 rounded="50%" absolute top="1/2" left="1/2" @click.stop="onPlayRecommendedList(item.id)">
-              <div i-carbon:play-filled-alt w-8 h-8 />
+              <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
             </div>
           </div>
           <div class="describe" :title="item.name">
@@ -122,7 +129,7 @@ const onPlayRecommendedList = (playlistId: number) => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .content > div {
   @apply mb-10;
 }
@@ -131,12 +138,14 @@ h1 {
   @apply text-3xl font-800 py-5;
 }
 
-.frontCover:hover > .play__btn {
-  display: block;
+.images:hover {
+  & .images__content .play__btn {
+    @apply block;
+  }
 }
 
 .describe {
-  @apply my-4 font-bold text-base truncate;
+  @apply my-4 font-bold text-base line-feed line-clamp-2 hover:underline;
 }
 </style>
 

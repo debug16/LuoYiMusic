@@ -127,7 +127,7 @@ const activeLyricIndex = (time: number) => {
 }
 
 const clickLyric = (i: number) => {
-  audio.currentTime = lyricsInfo.lyrics[i].time+0.01
+  audio.currentTime = lyricsInfo.lyrics[i].time + 0.01
 }
 
 // 播放时间变化事件
@@ -141,10 +141,24 @@ const timeUpdate = (e: any) => {
   lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1
 }
 
+// 页面标题
+let title = computed(() => {
+  let musicName = playMusicStore.getPlayMusicName
+  let musicSongsSinger = playMusicStore.getPlayMusicSongsSinger
+  return !musicName ? 'LuoYiMusic' : musicName + ' · ' + musicSongsSinger
+})
+
+// 设置页面标题
+useTitle(title)
 // 监听播放音乐的 id
 watch(
   () => playMusicStore.activePlayMusic.id,
   (_nId: any, _old: any) => {
+    // 清空歌词
+    lyricsInfo.lyrics = [{ time: 0, text: '' }]
+    // 重置歌词信息
+    playMusicStore.setLyric(null)
+    // 获取歌词
     if (_nId) {
       lyric(_nId).then((res: any) => {
         if (res.code === 200) {
@@ -154,7 +168,8 @@ watch(
         }
       })
     }
-
+    // 设置页面标题为歌曲名
+    // title =
     // 暂停播放
     stopPlayMusic()
 
@@ -172,6 +187,8 @@ watch(
   },
   { immediate: true }
 )
+
+// 监听歌词变化索引
 watch(
   () => lyricsInfo.lyricsIndex,
   (nIndex: number, oldIndex: number) => {
@@ -216,7 +233,7 @@ const changePlayTime = () => {
 </script>
 
 <template>
-  <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform class="fullScreenPlayer" fixed w-100vw h-100vh bg="#4D2F29" z-9000 top-0 left-0>
+  <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
     <div class="player__minimize" absolute i-carbon:chevron-down top-10 right-10 w-10 h-10 color="#ccc" @click="isFullScreenPlayer = false" />
     <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
       <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
@@ -227,15 +244,15 @@ const changePlayTime = () => {
         <!-- 歌曲信息 -->
         <div mt-20px flex="~" justify-between>
           <div class="song__info" overflow-hidden>
-            <div class="song__name" w-full truncate text-2xl color="#fff" font-bold :title="playMusicStore.getPlayMusicName">{{ playMusicStore.getPlayMusicName }}</div>
+            <div class="song__name" w-full truncate text-2xl font-bold :title="playMusicStore.getPlayMusicName">{{ playMusicStore.getPlayMusicName }}</div>
             <div class="song__singer" text-sm truncate color="#ccc">{{ playMusicStore.getPlayMusicSongsSinger }}</div>
           </div>
           <div class="song__operation" mr-4 flex="inline col" justify-center>
-            <div m-2 i-carbon-favorite color="#fff" class="hover:i-carbon:favorite-filled hover:scale-115" transition-transform></div>
+            <div m-2 i-carbon-favorite class="hover:i-carbon:favorite-filled hover:scale-115" transition-transform></div>
           </div>
         </div>
         <!-- 进度条 -->
-        <div flex="~ row " items-center space-x-4 color="#cdcafe">
+        <div flex="~ row " items-center space-x-4 color="#ccc/50">
           <div text-right>{{ audioInfo.musicCurrentTime }}</div>
           <div flex-1 h-1 bg="#ccc" rounded-md class="progress" ref="progressRef" @click="changePlayTime">
             <div :style="`width:${percentage}%`" h-full bg="#ff9966" rounded-md relative>
@@ -245,7 +262,7 @@ const changePlayTime = () => {
           <div>{{ audioInfo.musicOverTime }}</div>
         </div>
         <!-- 播放按钮 -->
-        <div flex="~" items-center justify-center text-lg font-800 color-white>
+        <div flex="~" items-center justify-center text-lg font-800>
           <!-- 上一首 -->
           <div class="icon" @click="prevPlayMusic">
             <div i-carbon:skip-back-filled />
@@ -286,19 +303,19 @@ const changePlayTime = () => {
     </div>
   </div>
   <div h-full>
-    <footer class="footer" color="#fff" h-full @click="isFullScreenPlayer = true">
-      <div flex="~" justify-between items-center color-white h-full>
+    <footer class="footer" h-full @click="isFullScreenPlayer = true">
+      <div flex="~" justify-between items-center h-full>
         <div class="left" flex="~" text-2xl space-x-3 w="1/3">
           <div h-50px w-50px flex="shrink-0" class="footer__music--img">
             <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
           </div>
           <div class="footer__music--title" text-base flex="~ col" justify-evenly>
             <!-- 歌名 -->
-            <div class="footer__music--song" text-base overflow-hidden>
+            <div class="footer__music--song" font-600 color="#000" text-base overflow-hidden>
               {{ playMusicStore.getPlayMusicName }}
             </div>
             <!-- 歌手 -->
-            <div class="footer__music--singer" color="#fff/60" text-xs>
+            <div class="footer__music--singer" text-xs color="#000/65">
               {{ playMusicStore.getPlayMusicSongsSinger }}
             </div>
           </div>
@@ -340,7 +357,7 @@ const changePlayTime = () => {
 </template>
 <style scoped>
 .slideUp {
-  @apply translate-y-100%
+  @apply translate-y-100%;
 }
 
 .progress .progress--circle {
@@ -357,20 +374,20 @@ const changePlayTime = () => {
   display: none;
 }
 .player__lyrics .play__container {
-  @apply h-14 relative -translate-y-50% top-50% border-light-50 border w-full
+  @apply h-14 relative -translate-y-50% top-50% border-light-50 border w-full;
 }
 
 .lyrics__container {
   @apply pt-48vh pb-52vh;
 }
 .lyrics__container div {
-  @apply text-2xl color-#7F7F7F font-bold py-6 px-4 relative select-none
+  @apply text-2xl color-#ccc/50 font-bold py-6 px-4 relative select-none;
 }
 .lyrics__container div:hover:after {
   content: attr(data-lyric-fTime);
   @apply absolute top-1 right-6 text-base;
 }
 .lyrics__container .lyricActive {
-  @apply color-#fff  text-7 transition-all
+  @apply color-#fff  text-7 transition-all;
 }
 </style>
