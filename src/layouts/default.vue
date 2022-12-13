@@ -19,17 +19,17 @@ provide('isFullScreenPlayer', { isFullScreenPlayer, updateIsFullScreenPlayer })
 
 <template>
   <!-- 头部内容 -->
-  <div class="header" bg="#222222/95" h-65px>
+  <div class="header" h-65px bg="#fff/98">
     <Header />
   </div>
   <!-- 主体内容 -->
-  <main class="text-gray-200 main">
+  <main class="main">
     <RouterView v-slot="{ Component }">
       <component :is="Component"></component>
     </RouterView>
   </main>
   <!-- 尾部内容 -->
-  <div :class="{ slideUp: footerHide }" transition-transform class="footer" bg="#222222/95" h-65px>
+  <div :class="{ slideUp: footerHide }" transition-transform transition-duration-400 class="footer" bg="#fff/98" h-65px>
     <Footer />
   </div>
 </template>
@@ -75,6 +75,6 @@ main {
   bottom: 0;
   left: 0;
   z-index: -1;
-  @apply filter:blur(1px) bg-#222/90
+  @apply filter:blur(1px) 
 }
 </style>
