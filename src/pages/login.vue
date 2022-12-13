@@ -5,12 +5,12 @@
     <div class="login" flex="~ col" items-center>
       <div class="login__title" color="#ccc">登录</div>
       <div class="login_username">
-        <input type="text" name="username" placeholder="username" />
+        <input type="text" name="username" placeholder="账号" />
       </div>
       <div class="login_password">
-        <input type="password" name="password" placeholder="password" />
+        <input type="password" name="password" placeholder="密码" />
       </div>
-      <div class="login__submit" color="#fff" bg="blue-500" hover="bg-blue-600 cursor-pointer" active:transform="scale-101" w-full text-center p-2 rounded-lg>Login</div>
+      <div class="login__submit" color="#fff" bg="blue-500" hover="bg-blue-600 cursor-pointer" active:transform="scale-101" w-full text-center p-2 rounded-lg>登录</div>
     </div>
     <div class="icones"></div>
   </div>
