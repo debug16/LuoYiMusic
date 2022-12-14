@@ -29,7 +29,7 @@ provide('isFullScreenPlayer', { isFullScreenPlayer, updateIsFullScreenPlayer })
     </RouterView>
   </main>
   <!-- 尾部内容 -->
-  <div :class="{ slideUp: footerHide }" transition-transform transition-duration-400 class="footer" bg="#fff/98" h-65px>
+  <div :class="{ slideUp: footerHide }" transition-transform transition-duration-400 class="footer" bg="#fff/98">
     <Footer />
   </div>
 </template>
@@ -57,8 +57,7 @@ main {
 }
 
 .header,
-.main,
-.footer {
+.main{
   @apply xl:px-10%
 }
 
