@@ -4,6 +4,8 @@ import { isSongsFree } from '~/utils/songs'
 import { formateTime } from '~/utils/time'
 import { formatLyric } from '~/utils/lyric'
 import { lyric } from '~/api/lyric'
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 
 const playMusicStore = usePlayMusicStore()
 
@@ -22,12 +24,6 @@ const audioInfo = reactive({
 let lyricsInfo = reactive({
   lyrics: [{ time: 0, text: '' }],
   lyricsIndex: 0,
-})
-
-// 播放进度条
-let percentage = computed(() => {
-  const num = (audioInfo.currentTime / audioInfo.duration) * 100
-  return num.toFixed(2)
 })
 
 // 注入播放栏操作
@@ -126,6 +122,7 @@ const activeLyricIndex = (time: number) => {
   )
 }
 
+// 点击歌词
 const clickLyric = (i: number) => {
   audio.currentTime = lyricsInfo.lyrics[i].time + 0.01
 }
@@ -210,163 +207,206 @@ const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
 })
 
-// 进度条点击
+// 播放栏被点击
 let isFullScreenPlayer = $ref(false)
 
-let progressRef = ref(null)
+const slider = $ref()
 
-const { elementX, elementWidth } = useMouseInElement(progressRef)
-// 进度条点击事件
-const changePlayTime = () => {
-  audio.currentTime = (elementX.value / elementWidth.value) * audioInfo.duration
+// 进度条改变事件
+const change = (v: number, i: number) => {
+  audio.currentTime = v
 }
 
-// let progressCircleRef = ref(null)
-// const Draggable = useDraggable(progressCircleRef, {
-//   onStart: (p, e) => {
-//     console.log('start', e.offsetX, e)
-//   },
-//   onEnd: (p, e) => {
-//     console.log('end', e.offsetX, e)
-//   },
-// })
+// 进度条上方提示格式话函数
+const tooltipFormatter = (v: number) => {
+  return formateTime(v) || 'unknown'
+}
 </script>
 
 <template>
-  <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
-    <div class="player__minimize" absolute i-carbon:chevron-down top-10 right-10 w-10 h-10 color="#ccc" @click="isFullScreenPlayer = false" />
-    <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
-      <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
-        <!-- 图片 -->
-        <div h="65%" text-center>
-          <img h="100%" inline-block object-contain class="song__img" rounded-3xl :src="`${playMusicStore.getPlayMusicCover}?param=512y512`" alt="" />
-        </div>
-        <!-- 歌曲信息 -->
-        <div mt-20px flex="~" justify-between>
-          <div class="song__info" overflow-hidden>
-            <div class="song__name" w-full truncate text-2xl font-bold :title="playMusicStore.getPlayMusicName">{{ playMusicStore.getPlayMusicName }}</div>
-            <div class="song__singer" text-sm truncate color="#ccc">{{ playMusicStore.getPlayMusicSongsSinger }}</div>
+  <vue-slider
+    v-model="audioInfo.currentTime"
+    :max="audioInfo.duration | 0"
+    :interval="1"
+    :min="0"
+    tooltip="active"
+    ref="slider"
+    :use-keyboard="false"
+    :lazy="true"
+    :tooltip-formatter="tooltipFormatter"
+    :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
+    @change="change"
+    :dragOnClick="true"
+    :dotSize="[10, 10]"
+    :height="2"
+    :contained="true"
+  />
+  <div class="footerContent" pb-5px>
+    <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
+      <div class="player__minimize" z-10 absolute i-carbon:chevron-down top-10 right-10 w-10 h-10 color="#ccc" @click="isFullScreenPlayer = false" />
+      <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
+        <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
+          <!-- 图片 -->
+          <div h="65%" text-center>
+            <img h="100%" inline-block object-contain class="song__img" rounded-3xl :src="`${playMusicStore.getPlayMusicCover}?param=512y512`" alt="" />
           </div>
-          <div class="song__operation" mr-4 flex="inline col" justify-center>
-            <div m-2 i-carbon-favorite class="hover:i-carbon:favorite-filled hover:scale-115" transition-transform></div>
-          </div>
-        </div>
-        <!-- 进度条 -->
-        <div flex="~ row " items-center space-x-4 color="#ccc/50">
-          <div text-right>{{ audioInfo.musicCurrentTime }}</div>
-          <div flex-1 h-1 bg="#ccc" rounded-md class="progress" ref="progressRef" @click="changePlayTime">
-            <div :style="`width:${percentage}%`" h-full bg="#ff9966" rounded-md relative>
-              <div h="2.5" w="2.5" class="progress--circle" ref="progressCircleRef" cursor-pointer transition="all" rounded-lg right="-1.25" bg="#fff" absolute top="-.75"></div>
+          <!-- 歌曲信息 -->
+          <div mt-20px flex="~" justify-between>
+            <div class="song__info" overflow-hidden>
+              <div class="song__name" w-full truncate text-2xl font-bold :title="playMusicStore.getPlayMusicName">{{ playMusicStore.getPlayMusicName }}</div>
+              <div class="song__singer" text-sm truncate color="#ccc">{{ playMusicStore.getPlayMusicSongsSinger }}</div>
+            </div>
+            <div class="song__operation" mr-4 flex="inline col" justify-center>
+              <div m-2 i-carbon-favorite class="hover:i-carbon:favorite-filled hover:scale-115" transition-transform></div>
             </div>
           </div>
-          <div>{{ audioInfo.musicOverTime }}</div>
+          <!-- 进度条 -->
+          <div flex="~ row " items-center space-x-4 color="#ccc/50">
+            <div text-right>{{ audioInfo.musicCurrentTime }}</div>
+            <!-- <div flex-1 h-1 bg="#ccc" rounded-md class="progress" ref="progressRef" @click="changePlayTime">
+              <div :style="`width:${percentage}%`" h-full bg="#ff9966" rounded-md relative>
+                <div h="2.5" w="2.5" class="progress--circle" ref="progressCircleRef" cursor-pointer transition="all" rounded-lg right="-1.25" bg="#fff" absolute top="-.75"></div>
+              </div>
+            </div> -->
+            <vue-slider
+              flex-1
+              pb-0
+              v-model="audioInfo.currentTime"
+              :max="audioInfo.duration | 0"
+              :interval="1"
+              :min="0"
+              tooltip="none"
+              ref="slider"
+              :use-keyboard="false"
+              :lazy="true"
+              :tooltip-formatter="tooltipFormatter"
+              @change="change"
+              :processStyle="{ backgroundColor: '#fff' }"
+              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
+              :dragOnClick="true"
+              :dotSize="[10, 10]"
+              :height="3"
+              :contained="true"
+            />
+            <div>{{ audioInfo.musicOverTime }}</div>
+          </div>
+          <!-- 播放按钮 -->
+          <div flex="~" items-center justify-center text-lg font-800>
+            <!-- 上一首 -->
+            <div class="icon" @click="prevPlayMusic">
+              <div i-carbon:skip-back-filled />
+            </div>
+            <!-- 播放 -->
+            <div v-show="isPlaying" class="icon" @click="stopPlayMusic" mx-8>
+              <div i-carbon:pause-filled w-12 h-12 />
+            </div>
+            <!-- 暂停 -->
+            <div v-show="!isPlaying" class="icon" @click="playMusic" mr-7 ml-9>
+              <div i-carbon:play-filled-alt w-12 h-12 />
+            </div>
+            <!-- 下一首 -->
+            <div class="icon" @click="nextPlayMusic">
+              <div i-carbon:skip-forward-filled />
+            </div>
+          </div>
         </div>
-        <!-- 播放按钮 -->
-        <div flex="~" items-center justify-center text-lg font-800>
-          <!-- 上一首 -->
-          <div class="icon" @click="prevPlayMusic">
-            <div i-carbon:skip-back-filled />
+        <!-- 歌词 -->
+        <div class="player__lyrics" shrink-0 w="1/2" ref="lyricsRef">
+          <div class="lyrics__container" ref="lyricConRef">
+            <!-- <template > -->
+            <div
+              v-for="(lyrics, index) in lyricsInfo.lyrics"
+              :key="index"
+              @click="clickLyric(index)"
+              :data-lyric-index="index"
+              :data-lyric-fTime="formateTime(lyrics.time)"
+              :class="{ lyricActive: lyricsInfo.lyricsIndex === index }"
+              hover="bg-#ccc/8 rounded-5"
+              :data-lyric-time="lyrics.time"
+            >
+              {{ lyrics.text }}
+            </div>
+            <!-- </template> -->
           </div>
-          <!-- 播放 -->
-          <div v-show="isPlaying" class="icon" @click="stopPlayMusic" mx-8>
-            <div i-carbon:pause-filled w-12 h-12 />
-          </div>
-          <!-- 暂停 -->
-          <div v-show="!isPlaying" class="icon" @click="playMusic" mr-7 ml-9>
-            <div i-carbon:play-filled-alt w-12 h-12 />
-          </div>
-          <!-- 下一首 -->
-          <div class="icon" @click="nextPlayMusic">
-            <div i-carbon:skip-forward-filled />
-          </div>
-        </div>
-      </div>
-      <!-- 歌词 -->
-      <div class="player__lyrics" shrink-0 w="1/2" ref="lyricsRef">
-        <div class="lyrics__container" ref="lyricConRef">
-          <!-- <template > -->
-          <div
-            v-for="(lyrics, index) in lyricsInfo.lyrics"
-            :key="index"
-            @click="clickLyric(index)"
-            :data-lyric-index="index"
-            :data-lyric-fTime="formateTime(lyrics.time)"
-            :class="{ lyricActive: lyricsInfo.lyricsIndex === index }"
-            hover="bg-#ccc/8 rounded-5"
-            :data-lyric-time="lyrics.time"
-          >
-            {{ lyrics.text }}
-          </div>
-          <!-- </template> -->
         </div>
       </div>
     </div>
-  </div>
-  <div h-full>
-    <footer class="footer" h-full @click="isFullScreenPlayer = true">
-      <div flex="~" justify-between items-center h-full>
-        <div class="left" flex="~" text-2xl space-x-3 w="1/3">
-          <div h-50px w-50px flex="shrink-0" class="footer__music--img">
-            <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
-          </div>
-          <div class="footer__music--title" text-base flex="~ col" justify-evenly>
-            <!-- 歌名 -->
-            <div class="footer__music--song" font-600 color="#000" text-base overflow-hidden>
-              {{ playMusicStore.getPlayMusicName }}
+    <div h-full>
+      <footer class="footer" h-full @click="isFullScreenPlayer = true">
+        <div flex="~" justify-between items-center h-full>
+          <div class="left" flex="~" text-2xl space-x-3 w="1/3">
+            <div h-50px w-50px flex="shrink-0" class="footer__music--img">
+              <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
             </div>
-            <!-- 歌手 -->
-            <div class="footer__music--singer" text-xs color="#000/65">
-              {{ playMusicStore.getPlayMusicSongsSinger }}
+            <div class="footer__music--title" text-base flex="~ col" justify-evenly>
+              <!-- 歌名 -->
+              <div class="footer__music--song" font-600 color="#000" text-base overflow-hidden>
+                {{ playMusicStore.getPlayMusicName }}
+              </div>
+              <!-- 歌手 -->
+              <div class="footer__music--singer" text-xs color="#000/65">
+                {{ playMusicStore.getPlayMusicSongsSinger }}
+              </div>
+            </div>
+          </div>
+          <div class="center" flex="~" items-center space-x6 text-lg font-800>
+            <!-- 上一首 -->
+            <div class="icon" @click.stop="prevPlayMusic">
+              <div i-carbon:skip-back-filled />
+            </div>
+            <!-- 播放 -->
+            <div v-show="isPlaying" class="icon" @click.stop="stopPlayMusic">
+              <div i-carbon:pause-filled w-8 h-8 />
+            </div>
+            <!-- 暂停 -->
+            <div v-show="!isPlaying" class="icon" @click.stop="playMusic">
+              <div i-carbon:play-filled-alt w-8 h-8 />
+            </div>
+            <!-- 下一首 -->
+            <div class="icon" @click.stop="nextPlayMusic">
+              <div i-carbon:skip-forward-filled />
+            </div>
+          </div>
+          <div class="right" flex="~" space-x-3 w="1/3" justify-end>
+            <span i-carbon:volume-up-filled w5 h5></span>
+            <span i-carbon:volume-mute-filled w5 h5></span>
+            <span i-carbon:chevron-up @click="isFullScreenPlayer = true"></span>
+            <progress value="70" max="100">70 %</progress>
+            <div class="audio" hidden>
+              <audio ref="audio" :src="playMusicUrl" autoplay controls @ended="endPlayMusic" @play="startPlayMusic" @error="stopPlayMusic" @pause="stopPlayMusic" @timeupdate="timeUpdate($event)">
+                <source :src="playMusicUrl" type="audio/ogg" />
+                <source :src="playMusicUrl" type="audio/mpeg" />
+                您的浏览器不支持 audio 元素。
+              </audio>
             </div>
           </div>
         </div>
-        <div class="center" flex="~" items-center space-x6 text-lg font-800>
-          <!-- 上一首 -->
-          <div class="icon" @click.stop="prevPlayMusic">
-            <div i-carbon:skip-back-filled />
-          </div>
-          <!-- 播放 -->
-          <div v-show="isPlaying" class="icon" @click.stop="stopPlayMusic">
-            <div i-carbon:pause-filled w-8 h-8 />
-          </div>
-          <!-- 暂停 -->
-          <div v-show="!isPlaying" class="icon" @click.stop="playMusic">
-            <div i-carbon:play-filled-alt w-8 h-8 />
-          </div>
-          <!-- 下一首 -->
-          <div class="icon" @click.stop="nextPlayMusic">
-            <div i-carbon:skip-forward-filled />
-          </div>
-        </div>
-        <div class="right" flex="~" space-x-3 w="1/3" justify-end>
-          <span i-carbon:volume-up-filled w5 h5></span>
-          <span i-carbon:volume-mute-filled w5 h5></span>
-          <span i-carbon:chevron-up @click="isFullScreenPlayer = true"></span>
-          <progress value="70" max="100">70 %</progress>
-          <div class="audio" hidden>
-            <audio ref="audio" :src="playMusicUrl" autoplay controls @ended="endPlayMusic" @play="startPlayMusic" @error="stopPlayMusic" @pause="stopPlayMusic" @timeupdate="timeUpdate($event)">
-              <source :src="playMusicUrl" type="audio/ogg" />
-              <source :src="playMusicUrl" type="audio/mpeg" />
-              您的浏览器不支持 audio 元素。
-            </audio>
-          </div>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   </div>
 </template>
-<style scoped>
+<style scoped lang="scss">
+.vue-slider {
+  padding-top: 0 !important;
+  &:hover {
+    :deep(.vue-slider-dot-handle) {
+      display: block !important;
+    }
+  }
+  :deep(.vue-slider-dot-handle) {
+    display: none !important;
+  }
+}
+.footerContent {
+  @apply w-full xl:px-10%;
+}
 .slideUp {
   @apply translate-y-100%;
 }
 
-.progress .progress--circle {
-  @apply hidden;
+.player__container .vue-slider {
+  padding: 0 !important;
 }
-.progress:hover .progress--circle {
-  @apply block;
-}
-
 .player__lyrics {
   @apply relative overflow-auto;
 }
