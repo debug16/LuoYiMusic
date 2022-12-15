@@ -9,7 +9,7 @@ declare module '@vue/runtime-core' {
     Counter: typeof import('./components/Counter.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
-    Icon: typeof import('./components/Icon/Icon.vue')['default']
+    Icon: typeof import('./components/Icon.vue')['default']
     IconPlay: typeof import('./components/Icon/IconPlay.vue')['default']
     Images: typeof import('./components/Images.vue')['default']
     Menu: typeof import('./components/Menu.vue')['default']
