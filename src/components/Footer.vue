@@ -38,6 +38,7 @@ const audio: HTMLAudioElement = $ref()
 const startPlayMusic = () => {
   playMusicStore.activePlayMusic.state = 'playing'
   audioInfo.duration = audio.duration
+  audioVolume = audio.volume
   audioInfo.musicOverTime = formateTime(audioInfo.duration) || '00:00'
 }
 
@@ -52,6 +53,11 @@ const stopPlayMusic = () => {
   playMusicStore.activePlayMusic.state = 'pause'
 }
 
+// 音乐播放 暂停 切换
+const togglePlayMusic = () => {
+  if (audio.paused) playMusic()
+  else stopPlayMusic()
+}
 // 播放下一首歌
 const nextPlayMusic = () => {
   stopPlayMusic()
@@ -138,6 +144,8 @@ const timeUpdate = (e: any) => {
   lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1
 }
 
+//  ----------------------------  设置页面标题 start  ----------------------------
+// #region
 // 页面标题
 let title = computed(() => {
   let musicName = playMusicStore.getPlayMusicName
@@ -147,6 +155,11 @@ let title = computed(() => {
 
 // 设置页面标题
 useTitle(title)
+// #endregion
+//  ----------------------------  设置页面标题 end  ----------------------------
+
+//  ----------------------------  监听 start  ----------------------------
+// #region
 // 监听播放音乐的 id
 watch(
   () => playMusicStore.activePlayMusic.id,
@@ -202,6 +215,10 @@ watch(
     })
   }
 )
+
+// #endregion
+//  ----------------------------  监听 end  ----------------------------
+
 // 播放音乐的 url
 const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
@@ -210,7 +227,8 @@ const playMusicUrl = computed(() => {
 // 播放栏被点击
 let isFullScreenPlayer = $ref(false)
 
-const slider = $ref()
+// ----------------------------  进度条 start  ----------------------------
+// #region
 
 // 进度条改变事件
 const change = (v: number, i: number) => {
@@ -221,6 +239,94 @@ const change = (v: number, i: number) => {
 const tooltipFormatter = (v: number) => {
   return formateTime(v) || 'unknown'
 }
+
+// #endregion
+// ----------------------------  进度条 end  ----------------------------
+
+// ----------------------------  音量操作 start  ----------------------------
+// #region
+
+let audioVolume = $ref(audio?.volume || 0.5)
+
+// 音量改变事件
+const onVolumechange = (e: Event) => {
+  audioVolume = audio.volume
+  // 避免 静音的时候 进度条没有归零
+  if (audio.muted) audioVolume = 0
+}
+
+// 静音
+const onMute = () => {
+  audio.muted = true
+}
+
+// 解除静音
+const onUnmute = () => {
+  audio.muted = false
+  // 避免在在音量已经为 0 的时候 解除静音还是音量为 0
+  if (audio.volume === 0) audio.volume = Math.max(audio.volume, 0.3)
+  audioVolume = audio.volume
+}
+
+// 静音切换
+const toggleMute = () => {
+  if (audio.muted || audio.volume === 0) onUnmute()
+  else onMute()
+}
+// 进度条改变音量
+const changeVolume = (v: number, i: number) => {
+  audio.volume = v
+  if (v > 0) onUnmute()
+}
+
+// #endregion
+// ----------------------------  音量操作 end  ----------------------------
+
+// ----------------------------  快捷键 start  ----------------------------
+// # region
+
+const activeElement = useActiveElement()
+
+// 焦点是否在输入框
+const notUsingInput = $(computed(() => activeElement.value?.tagName !== 'INPUT' && activeElement.value?.tagName !== 'TEXTAREA'))
+
+// 取消键盘默认事件
+const onEventFired = (e: KeyboardEvent) => {
+  if (notUsingInput && (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'ArrowDown')) {
+    e.preventDefault()
+  }
+}
+// 获取快捷键的按下状态
+const { space, down, up, left, right, n, p, m, Escape, f } = $(useMagicKeys({ passive: false, onEventFired: onEventFired }))
+
+// 快捷键监听
+watchEffect(() => {
+  // audio 还没初始化 或者焦点在输入框 不做操作
+  if (!audio || !notUsingInput) return
+  // 空格 暂停音乐
+  if (space) togglePlayMusic()
+  // 下键 降低音量
+  if (down) (audio.volume = Math.max(audio.volume - 0.1, 0)), (audio.muted = false)
+  // 上键 提升音量
+  if (up) (audio.volume = Math.min(audio.volume + 0.1, 1)), (audio.muted = false)
+  // 左键 减音乐时间
+  if (left) audio.currentTime = Math.max(audio.currentTime - 5, 0)
+  // 右键 加音乐时间
+  if (right) audio.currentTime = Math.min(audio.currentTime + 5, audio.duration)
+  // N键(next) 下一首
+  if (n) nextPlayMusic()
+  // P键(pre) 上一首
+  if (p) prevPlayMusic()
+  // M键(mute) 静音
+  if (m) toggleMute()
+  // ESC键 取消歌词全屏
+  if (Escape) isFullScreenPlayer = false
+  // F键(full) 歌词全屏切换
+  if (f) isFullScreenPlayer = !isFullScreenPlayer
+})
+
+// # endregion
+// ----------------------------  快捷键 end  ----------------------------
 </script>
 
 <template>
@@ -230,7 +336,6 @@ const tooltipFormatter = (v: number) => {
     :interval="1"
     :min="0"
     tooltip="active"
-    ref="slider"
     :use-keyboard="false"
     :lazy="true"
     :tooltip-formatter="tooltipFormatter"
@@ -243,7 +348,7 @@ const tooltipFormatter = (v: number) => {
   />
   <div class="footerContent" pb-5px>
     <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
-      <div class="player__minimize" z-10 absolute i-carbon:chevron-down top-10 right-10 w-10 h-10 color="#ccc" @click="isFullScreenPlayer = false" />
+      <Icon class="player__minimize" z-10 absolute iconName="i-mingcute-down-fill" top-10 right-10 :w="8" :h="8" color="#ccc" @click="isFullScreenPlayer = false" />
       <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
         <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
           <!-- 图片 -->
@@ -257,7 +362,7 @@ const tooltipFormatter = (v: number) => {
               <div class="song__singer" text-sm truncate color="#ccc">{{ playMusicStore.getPlayMusicSongsSinger }}</div>
             </div>
             <div class="song__operation" mr-4 flex="inline col" justify-center>
-              <div m-2 i-carbon-favorite class="hover:i-carbon:favorite-filled hover:scale-115" transition-transform></div>
+              <Icon m-2 iconName="i-carbon-favorite" />
             </div>
           </div>
           <!-- 进度条 -->
@@ -276,7 +381,6 @@ const tooltipFormatter = (v: number) => {
               :interval="1"
               :min="0"
               tooltip="none"
-              ref="slider"
               :use-keyboard="false"
               :lazy="true"
               :tooltip-formatter="tooltipFormatter"
@@ -293,21 +397,13 @@ const tooltipFormatter = (v: number) => {
           <!-- 播放按钮 -->
           <div flex="~" items-center justify-center text-lg font-800>
             <!-- 上一首 -->
-            <div class="icon" @click="prevPlayMusic">
-              <div i-carbon:skip-back-filled />
-            </div>
+            <Icon iconName="i-carbon:skip-back-filled" @click="prevPlayMusic" />
             <!-- 播放 -->
-            <div v-show="isPlaying" class="icon" @click="stopPlayMusic" mx-8>
-              <div i-carbon:pause-filled w-12 h-12 />
-            </div>
+            <Icon iconName="i-carbon:pause-filled" :w="10" :h="10" v-show="isPlaying" class="icon" @click="stopPlayMusic" mr-7 ml-9 />
             <!-- 暂停 -->
-            <div v-show="!isPlaying" class="icon" @click="playMusic" mr-7 ml-9>
-              <div i-carbon:play-filled-alt w-12 h-12 />
-            </div>
+            <Icon iconName="i-carbon:play-filled-alt" :w="10" :h="10" v-show="!isPlaying" @click="playMusic" mr-7 ml-9 />
             <!-- 下一首 -->
-            <div class="icon" @click="nextPlayMusic">
-              <div i-carbon:skip-forward-filled />
-            </div>
+            <Icon iconName="i-carbon:skip-forward-filled " @click="nextPlayMusic" />
           </div>
         </div>
         <!-- 歌词 -->
@@ -333,8 +429,8 @@ const tooltipFormatter = (v: number) => {
     </div>
     <div h-full>
       <footer class="footer" h-full @click="isFullScreenPlayer = true">
-        <div flex="~" justify-between items-center h-full>
-          <div class="left" flex="~" text-2xl space-x-3 w="1/3">
+        <div flex="~" relative items-stretch justify-between items-center h-full>
+          <div class="left" flex="~" text-2xl space-x-3>
             <div h-50px w-50px flex="shrink-0" class="footer__music--img">
               <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
             </div>
@@ -349,31 +445,56 @@ const tooltipFormatter = (v: number) => {
               </div>
             </div>
           </div>
-          <div class="center" flex="~" items-center space-x6 text-lg font-800>
+          <div class="center" absolute left="50%" top="50%" translate="-50%" flex="~" items-center text-lg font-800>
             <!-- 上一首 -->
-            <div class="icon" @click.stop="prevPlayMusic">
-              <div i-carbon:skip-back-filled />
-            </div>
+            <Icon :iconName="'i-carbon:skip-back-filled'" @click.stop="prevPlayMusic"> </Icon>
             <!-- 播放 -->
-            <div v-show="isPlaying" class="icon" @click.stop="stopPlayMusic">
-              <div i-carbon:pause-filled w-8 h-8 />
-            </div>
+            <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic">
+              <!-- <div i-carbon:pause-filled w-9 h-9 /> -->
+            </Icon>
             <!-- 暂停 -->
-            <div v-show="!isPlaying" class="icon" @click.stop="playMusic">
-              <div i-carbon:play-filled-alt w-8 h-8 />
-            </div>
+            <Icon iconName="i-carbon:play-filled-alt" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic"> </Icon>
             <!-- 下一首 -->
-            <div class="icon" @click.stop="nextPlayMusic">
-              <div i-carbon:skip-forward-filled />
-            </div>
+            <!-- <div class="icon"> -->
+            <Icon iconName="i-carbon:skip-forward-filled" @click.stop="nextPlayMusic"></Icon>
+            <!-- </div> -->
           </div>
-          <div class="right" flex="~" space-x-3 w="1/3" justify-end>
-            <span i-carbon:volume-up-filled w5 h5></span>
-            <span i-carbon:volume-mute-filled w5 h5></span>
-            <span i-carbon:chevron-up @click="isFullScreenPlayer = true"></span>
-            <progress value="70" max="100">70 %</progress>
+          <div class="right" @click.stop="null" flex="~" items-center space-x-3 justify-end>
+            <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-carbon:volume-mute-filled" :w="4" :h="4" @click="onUnmute" />
+            <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-carbon:volume-down-filled" :w="4" :h="4" @click="onMute" />
+            <Icon v-else iconName="i-carbon:volume-up-filled" :w="4" :h="4" @click="onMute" />
+            <vue-slider
+              class="volume"
+              v-model="audioVolume"
+              :max="1"
+              :interval="0.01"
+              :min="0"
+              tooltip="none"
+              :use-keyboard="false"
+              :tooltip-formatter="tooltipFormatter"
+              :processStyle="{ backgroundColor: '#335eea' }"
+              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
+              @change="changeVolume"
+              :dragOnClick="true"
+              :dotSize="[12, 12]"
+              :height="6"
+              :width="100"
+              :contained="true"
+            />
+            <Icon iconName="i-mingcute-up-fill" :w="5" :h="5" @click="isFullScreenPlayer = true" />
             <div class="audio" hidden>
-              <audio ref="audio" :src="playMusicUrl" autoplay controls @ended="endPlayMusic" @play="startPlayMusic" @error="stopPlayMusic" @pause="stopPlayMusic" @timeupdate="timeUpdate($event)">
+              <audio
+                ref="audio"
+                @volumechange="onVolumechange"
+                :src="playMusicUrl"
+                autoplay
+                controls
+                @ended="endPlayMusic"
+                @play="startPlayMusic"
+                @error="stopPlayMusic"
+                @pause="stopPlayMusic"
+                @timeupdate="timeUpdate($event)"
+              >
                 <source :src="playMusicUrl" type="audio/ogg" />
                 <source :src="playMusicUrl" type="audio/mpeg" />
                 您的浏览器不支持 audio 元素。
@@ -386,6 +507,8 @@ const tooltipFormatter = (v: number) => {
   </div>
 </template>
 <style scoped lang="scss">
+// ------------------------ 底部播放栏 进度条 start ------------------------
+// #region
 .vue-slider {
   padding-top: 0 !important;
   &:hover {
@@ -397,6 +520,16 @@ const tooltipFormatter = (v: number) => {
     display: none !important;
   }
 }
+// #endregion
+// ------------------------ 底部播放栏 进度条 end ------------------------
+
+// 音量进度条
+.right {
+  .volume {
+    padding: 5px 0 #{!important};
+  }
+}
+
 .footerContent {
   @apply w-full xl:px-10%;
 }
@@ -405,7 +538,7 @@ const tooltipFormatter = (v: number) => {
 }
 
 .player__container .vue-slider {
-  padding: 0 !important;
+  padding: 5px 0 !important;
 }
 .player__lyrics {
   @apply relative overflow-auto;

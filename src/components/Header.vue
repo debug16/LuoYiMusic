@@ -13,12 +13,8 @@ const showMenu = (e: MouseEvent) => {
 <template>
   <header flex="~" justify-between items-center h-full>
     <div class="left" flex="~" text-2xl space-x-6 w="1/4">
-      <div class="icon" @click="router.back()">
-        <div i-carbon:chevron-left />
-      </div>
-      <div class="icon" @click="router.go(1)">
-        <div i-carbon:chevron-right />
-      </div>
+      <Icon iconName="i-mingcute-left-fill" @click="router.back()"/>
+      <Icon iconName="i-mingcute-right-fill" @click="router.go(1)"/>
     </div>
     <div class="center" flex="~" space-x-12 text-lg font-800>
       <div :class="{ active: route.path === '/' }" @click="router.push('/')">
@@ -40,7 +36,7 @@ const showMenu = (e: MouseEvent) => {
       </div>
     </div>
     <Menu ref="menuRef">
-      <div class="item">登录</div>
+      <div class="item" @click="router.push('/login')">登录</div>
       <div class="item">注册</div>
       <div class="item">Github仓库</div>
     </Menu>
