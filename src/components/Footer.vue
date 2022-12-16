@@ -9,6 +9,10 @@ import 'vue-slider-component/theme/default.css'
 
 const playMusicStore = usePlayMusicStore()
 
+// 播放栏被点击
+let isFullScreenPlayer = $ref(false)
+
+// 音乐播放信息
 const audioInfo = reactive({
   //当前音乐播放到的时间
   currentTime: 0,
@@ -21,11 +25,6 @@ const audioInfo = reactive({
   musicCurrentTime: '00:00',
 })
 
-let lyricsInfo = reactive({
-  lyrics: [{ time: 0, text: '' }],
-  lyricsIndex: 0,
-})
-
 // 注入播放栏操作
 const injects = inject<{
   footerHide: boolean
@@ -34,6 +33,8 @@ const injects = inject<{
 
 const audio: HTMLAudioElement = $ref()
 
+// ----------------------------  音乐播放操作 start  ----------------------------
+// #region
 // 音乐开始播放事件
 const startPlayMusic = () => {
   playMusicStore.activePlayMusic.state = 'playing'
@@ -58,6 +59,7 @@ const togglePlayMusic = () => {
   if (audio.paused) playMusic()
   else stopPlayMusic()
 }
+
 // 播放下一首歌
 const nextPlayMusic = () => {
   stopPlayMusic()
@@ -108,8 +110,31 @@ const isPlaying = computed(() => {
   return playMusicStore.activePlayMusic.state === 'playing'
 })
 
+// 播放时间变化事件
+const timeUpdate = (e: any) => {
+  audioInfo.currentTime = e.target.currentTime
+  audioInfo.musicCurrentTime = formateTime(audioInfo.currentTime) || '00:00'
+  // 获取当前歌词索引
+  const index = activeLyricIndex(audioInfo.currentTime)
+  const len = lyricsInfo.lyrics.length
+  lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1
+}
+
+// #endregion
+// ----------------------------  音乐播放操作 end  ----------------------------
+
+// ----------------------------  歌词操作 start  ----------------------------
+// #region
+
 let lyricsRef: HTMLDivElement = $ref()
 let lyricConRef: HTMLDivElement = $ref()
+
+// 歌词
+let lyricsInfo = reactive({
+  lyrics: [{ time: 0, text: '' }],
+  lyricsIndex: 0,
+})
+
 /**
  * 获取歌词
  */
@@ -133,16 +158,8 @@ const clickLyric = (i: number) => {
   audio.currentTime = lyricsInfo.lyrics[i].time + 0.01
 }
 
-// 播放时间变化事件
-const timeUpdate = (e: any) => {
-  audioInfo.currentTime = e.target.currentTime
-  audioInfo.musicCurrentTime = formateTime(audioInfo.currentTime) || '00:00'
-
-  // 获取当前歌词索引
-  const index = activeLyricIndex(audioInfo.currentTime)
-  const len = lyricsInfo.lyrics.length
-  lyricsInfo.lyricsIndex = index === 0 ? 0 : index === len - 1 ? index : index - 1
-}
+// #endregion
+// ----------------------------  歌词操作 end  ----------------------------
 
 //  ----------------------------  设置页面标题 start  ----------------------------
 // #region
@@ -219,14 +236,6 @@ watch(
 // #endregion
 //  ----------------------------  监听 end  ----------------------------
 
-// 播放音乐的 url
-const playMusicUrl = computed(() => {
-  if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
-})
-
-// 播放栏被点击
-let isFullScreenPlayer = $ref(false)
-
 // ----------------------------  进度条 start  ----------------------------
 // #region
 
@@ -283,7 +292,7 @@ const changeVolume = (v: number, i: number) => {
 // ----------------------------  音量操作 end  ----------------------------
 
 // ----------------------------  快捷键 start  ----------------------------
-// # region
+// #region
 
 const activeElement = useActiveElement()
 
@@ -325,8 +334,13 @@ watchEffect(() => {
   if (f) isFullScreenPlayer = !isFullScreenPlayer
 })
 
-// # endregion
+// #endregion
 // ----------------------------  快捷键 end  ----------------------------
+
+// 播放音乐的 url
+const playMusicUrl = computed(() => {
+  if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
+})
 </script>
 
 <template>
@@ -335,10 +349,12 @@ watchEffect(() => {
     :max="audioInfo.duration | 0"
     :interval="1"
     :min="0"
-    tooltip="active"
+    tooltip='hover'
     :use-keyboard="false"
     :lazy="true"
     :tooltip-formatter="tooltipFormatter"
+    :processStyle="{ backgroundColor: 'rgba(71,86,255)' }"
+    :tooltipStyle="{ backgroundColor: 'rgba(71,86,255)',borderColor:'rgba(71,86,255)'}"
     :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
     @change="change"
     :dragOnClick="true"
@@ -401,7 +417,7 @@ watchEffect(() => {
             <!-- 播放 -->
             <Icon iconName="i-carbon:pause-filled" :w="10" :h="10" v-show="isPlaying" class="icon" @click="stopPlayMusic" mr-7 ml-9 />
             <!-- 暂停 -->
-            <Icon iconName="i-carbon:play-filled-alt" :w="10" :h="10" v-show="!isPlaying" @click="playMusic" mr-7 ml-9 />
+            <Icon iconName="i-mingcute-play-fill" :w="10" :h="10" v-show="!isPlaying" @click="playMusic" mr-7 ml-9 />
             <!-- 下一首 -->
             <Icon iconName="i-carbon:skip-forward-filled " @click="nextPlayMusic" />
           </div>
@@ -450,10 +466,9 @@ watchEffect(() => {
             <Icon :iconName="'i-carbon:skip-back-filled'" @click.stop="prevPlayMusic"> </Icon>
             <!-- 播放 -->
             <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic">
-              <!-- <div i-carbon:pause-filled w-9 h-9 /> -->
             </Icon>
             <!-- 暂停 -->
-            <Icon iconName="i-carbon:play-filled-alt" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic"> </Icon>
+            <Icon iconName="i-mingcute-play-fill" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic"> </Icon>
             <!-- 下一首 -->
             <!-- <div class="icon"> -->
             <Icon iconName="i-carbon:skip-forward-filled" @click.stop="nextPlayMusic"></Icon>
@@ -472,8 +487,8 @@ watchEffect(() => {
               tooltip="none"
               :use-keyboard="false"
               :tooltip-formatter="tooltipFormatter"
-              :processStyle="{ backgroundColor: '#335eea' }"
-              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
+              :processStyle="{ backgroundColor: 'rgba(71,86,255)'}"
+              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)'}"
               @change="changeVolume"
               :dragOnClick="true"
               :dotSize="[12, 12]"

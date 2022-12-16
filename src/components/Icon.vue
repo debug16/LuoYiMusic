@@ -25,4 +25,3 @@ const props = defineProps({
   }
 }
 </style>
-p

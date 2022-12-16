@@ -67,8 +67,8 @@ const imgUrl = (url: string, param?: number | string) => {
         <div v-for="(item, i) in recommendSongs" :key="i">
           <Images :src="imgUrl(item.picUrl, 512)" cursor-pointer alt="item.name" @click="router.push(`/playlist/${item.id}`)">
             <template #content>
-              <div class="play__btn" bg="#fff/20" hidden hover="bg-#fff/30" p-3 rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
-                <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
+              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg"  p-3  rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
+                <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
               </div>
             </template>
           </Images>
