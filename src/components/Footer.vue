@@ -546,7 +546,7 @@ const playMusicUrl = computed(() => {
 }
 
 .footerContent {
-  @apply w-full xl:px-10%;
+  @apply w-full xl:px-10% md:px-3%;
 }
 .slideUp {
   @apply translate-y-100%;
