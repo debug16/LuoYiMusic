@@ -19,7 +19,7 @@ provide('isFullScreenPlayer', { isFullScreenPlayer, updateIsFullScreenPlayer })
 
 <template>
   <!-- 头部内容 -->
-  <div class="header" h-65px bg="#fff/98">
+  <div class="header" h-65px backdrop-blur-xl bg="#fff/90">
     <Header />
   </div>
   <!-- 主体内容 -->
@@ -29,7 +29,7 @@ provide('isFullScreenPlayer', { isFullScreenPlayer, updateIsFullScreenPlayer })
     </RouterView>
   </main>
   <!-- 尾部内容 -->
-  <div :class="{ slideUp: footerHide }" transition-transform transition-duration-400 class="footer" bg="#fff/98">
+  <div :class="{ slideUp: footerHide }" transition-transform transition-duration-400 backdrop-blur-xl class="footer" bg="#fff/85">
     <Footer />
   </div>
 </template>
@@ -58,7 +58,7 @@ main {
 
 .header,
 .main{
-  @apply xl:px-10%
+  @apply xl:px-10% lg:px-5% md:px-3%;
 }
 
 .slideUp {
