@@ -1,15 +1,15 @@
 <script setup lang="ts">
 interface Props {
-  name: string,
-  title?:string,
-  titleContent?:string,
+  name: string
+  title?: string
+  titleContent?: string
   description?: string
 }
 const { name } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="introduce" flex="~"> 
+  <div class="introduce" flex="~">
     <div class="left" shrink-0 w="1/5" mr-15>
       <!-- slot left -->
       <slot name="left" />
@@ -19,18 +19,18 @@ const { name } = defineProps<Props>()
         {{ name }}
       </div>
       <div class="singer" text-lg>
-        <p text-lg>{{title}}</p>
-        <p class="time" color="#000/60" text-sm>{{titleContent}}</p>
+        <p text-lg>{{ title }}</p>
+        <p class="time" color="#000/60" text-sm>{{ titleContent }}</p>
       </div>
       <div class="describe" text-sm color="#000/60" :title="description">
         {{ description }}
       </div>
       <!-- slot footer -->
-        <div class="footer">
+      <div class="footer" flex space-x-4>
         <slot name="footer" />
       </div>
     </div>
-    <slot/>
+    <slot />
   </div>
 </template>
 

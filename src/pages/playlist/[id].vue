@@ -85,26 +85,11 @@ const imgUrl = (url: string, param?: number | string) => {
         <Images :src="imgUrl(songsListDetails?.coverImgUrl, 512)" :alt="songsListDetails?.name" :title="songsListDetails?.name" />
       </template>
       <template #footer>
-        <div
-          class="manipulate"
-          select-none
-          cursor-pointer
-          flex="~"
-          items-center
-          space-x-1
-          bg="#8caaff73"
-          py-2
-          px-4
-          rounded-lg
-          color="#335eea"
-          font-500
-          hover:scale-104
-          transition-transform
-          @click="playMusic(songsList)"
-        >
-          <div i-carbon:play-filled-alt w-5 h-5 color="#335eea" />
-          <span>播放</span>
-        </div>
+        <Button @click="playMusic(songsList)" text="播放">
+          <template #icon>
+            <div i-carbon:play-filled-alt w-5 h-5 color="#335eea" />
+          </template>
+        </Button>
       </template>
     </Introduce>
     <!-- 歌单歌曲列表 -->
