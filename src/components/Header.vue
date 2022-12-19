@@ -8,6 +8,9 @@ const showMenu = (e: MouseEvent) => {
   menuRef.openMenu(e)
 }
 
+const goGithub = ()=>{
+  window.open('https://github.com/debug16/LuoYiMusic','_blank');
+}
 </script>
 
 <template>
@@ -39,7 +42,7 @@ const showMenu = (e: MouseEvent) => {
       <div class="item" @click="router.push('/settings')">设置</div>
       <div class="item" @click="router.push('/login')">登录</div>
       <div class="item">注册</div>
-      <div class="item">Github仓库</div>
+      <div class="item" @click="goGithub">Github仓库</div>
     </Menu>
   </header>
 </template>
