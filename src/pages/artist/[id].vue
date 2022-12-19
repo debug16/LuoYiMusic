@@ -5,7 +5,6 @@ interface Props {
 
 const { id } = defineProps<Props>()
 
-console.log(id)
 </script>
 
 <template>
@@ -55,18 +54,19 @@ console.log(id)
       </div>
     </div>
     <!-- 专辑 -->
-    <div class="album" space-y-6 >
+    <div class="album" space-y-6>
       <h1 text-2xl font-600>专辑</h1>
       <div class="album-list" grid grid-cols-5 grid-flow-row gap-x-4 gap-y-9>
         <div v-for="(item, i) in 12" :key="i">
-          <Images src="https://p1.music.126.net/YaX8ikdwH5eSPxIYAq_QZA==/109951164715645646.jpg?param=512y512" cursor-pointer>
-            <template #content>
-              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg" p-3 rounded="50%">
-                <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
-              </div>
-            </template>
-          </Images>
-          <div class="describe" my-4 font-600 text-base line-feed line-clamp-2 hover:underline cursor-pointer>悠长假期</div>
+          <FrontCover
+            src="https://p1.music.126.net/YaX8ikdwH5eSPxIYAq_QZA==/109951164715645646.jpg?param=512y512"
+            title="悠长假期"
+            describe="悠长假期fdsafd悠长假期saf悠长假期d悠长假期safdsafffffffffffffffffffff"
+            @click-play="null"
+            @click-img="null"
+            @click-title="null"
+          >
+          </FrontCover>
         </div>
       </div>
     </div>
@@ -76,11 +76,5 @@ console.log(id)
 <style scoped lang="scss">
 .introduce :deep(.songsName) {
   @apply text-5xl;
-}
-
-.images:hover {
-  & .images__content .play__btn {
-    @apply block;
-  }
 }
 </style>
