@@ -65,16 +65,14 @@ const imgUrl = (url: string, param?: number | string) => {
       <h1>推荐歌单</h1>
       <div class="recommend__content grid grid-cols-5 grid-flow-row gap-x-4 gap-y-8">
         <div v-for="(item, i) in recommendSongs" :key="i">
-          <Images :src="imgUrl(item.picUrl, 512)" cursor-pointer :alt="item.name" @click="router.push(`/playlist/${item.id}`)">
-            <template #content>
-              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg" p-3 rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
-                <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
-              </div>
-            </template>
-          </Images>
-          <div class="describe" cursor-pointer @click="router.push(`/playlist/${item.id}`)" :title="item.name">
-            {{ item.name }}
-          </div>
+          <FrontCover
+            :src="imgUrl(item.picUrl, 512)"
+            @click-img="router.push(`/playlist/${item.id}`)"
+            @click-title="router.push(`/playlist/${item.id}`)"
+            @click-play="onPlayRecommendedList(item.id)"
+            :title=" item.name"
+          ></FrontCover>
+        </div>
         </div>
       </div>
     </div>
@@ -82,16 +80,14 @@ const imgUrl = (url: string, param?: number | string) => {
       <h1>推荐艺人</h1>
       <div class="recommend__content grid grid-cols-6 grid-flow-row gap-8">
         <div v-for="artist in artistTop" :key="artist.id" flex="~ col" min-h-full>
-          <Images :src="imgUrl(artist.picUrl, 512)" cursor-pointer :alt="artist.name" shape="circle" @click="router.push(`/artist/${artist.id}`)">
-            <template #content>
-              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg" p-3 rounded="50%" @click.stop="onPlayRecommendedList(artist.id)">
-                <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
-              </div>
-            </template>
-          </Images>
-          <div class="describe" cursor-pointer text-center>
-            {{ artist.name }}
-          </div>
+          <FrontCover
+            :src="imgUrl(artist.picUrl, 512)"
+            :alt="artist.name"
+            shape="circle"
+            :title-center="true"
+            :title="artist.name"
+            @click-img="router.push(`/artist/${artist.id}`)"
+          ></FrontCover>
         </div>
       </div>
     </div>
@@ -127,7 +123,6 @@ const imgUrl = (url: string, param?: number | string) => {
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <style scoped lang="scss">
