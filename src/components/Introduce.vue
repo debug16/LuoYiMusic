@@ -9,7 +9,7 @@ const { name } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="introduce" flex="~">
+  <div class="introduce" flex="~" >
     <div class="left" shrink-0 w="1/5" mr-15>
       <!-- slot left -->
       <slot name="left" />
