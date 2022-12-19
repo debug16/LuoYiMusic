@@ -34,7 +34,7 @@ const props = defineProps({
     }
   }
   & .images__content {
-    @apply absolute left-50% top-50% -translate-50%;
+    @apply absolute left-50% top-50% w-22% h-22% -translate-50%;
   }
 }
 </style>
