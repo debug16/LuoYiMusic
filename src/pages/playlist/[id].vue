@@ -75,30 +75,38 @@ const imgUrl = (url: string, param?: number | string) => {
 <template>
   <div v-show="songsListDetails" class="playlist" py-10>
     <!-- 顶部歌单信息 -->
-    <div class="songsInfo" flex="~">
-      <div class="songsImg" shrink-0 w="1/5" mr-15>
-        <!-- <img w-full :src="`${songsListDetails?.coverImgUrl && songsListDetails?.coverImgUrl}?param=512y512`" alt=""
-          rounded-xl /> -->
+    <Introduce
+      :name="songsListDetails?.name"
+      :title="`Playlist by ${songsListDetails?.creator?.nickname}`"
+      :title-content="`最后更新于 ${formatDate(songsListDetails?.updateTime)}· ${songsListDetails?.trackCount}首歌`"
+      :description="songsListDetails?.description"
+    >
+      <template #left>
         <Images :src="imgUrl(songsListDetails?.coverImgUrl, 512)" :alt="songsListDetails?.name" :title="songsListDetails?.name" />
-      </div>
-      <div class="songsContent" font-400 flex="~ col" justify-evenly items-start min-h-full>
-        <div class="songsName" text-3xl font-900>
-          {{ songsListDetails?.name }}
-        </div>
-        <div class="singer" text-lg>
-          <p text-lg>Playlist by {{ songsListDetails?.creator?.nickname }}</p>
-          <p class="time" color="#000/60" text-sm>最后更新于 {{ formatDate(songsListDetails?.updateTime) }}· {{ songsListDetails?.trackCount }} 首歌</p>
-        </div>
-        <div class="describe" text-sm color="#000/60" :title="songsListDetails?.description">
-          {{ songsListDetails?.description }}
-        </div>
-        <!-- 播放按钮 -->
-        <div class="manipulate" flex="~" items-center space-x-1 bg="#8caaff73" py-2 px-4 rounded-lg color="#335eea" font-500 hover:scale-104 transition-transform @click="playMusic(songsList)">
+      </template>
+      <template #footer>
+        <div
+          class="manipulate"
+          select-none
+          cursor-pointer
+          flex="~"
+          items-center
+          space-x-1
+          bg="#8caaff73"
+          py-2
+          px-4
+          rounded-lg
+          color="#335eea"
+          font-500
+          hover:scale-104
+          transition-transform
+          @click="playMusic(songsList)"
+        >
           <div i-carbon:play-filled-alt w-5 h-5 color="#335eea" />
           <span>播放</span>
         </div>
-      </div>
-    </div>
+      </template>
+    </Introduce>
     <!-- 歌单歌曲列表 -->
     <div class="songsList" mt-20 tracking-widest>
       <div
