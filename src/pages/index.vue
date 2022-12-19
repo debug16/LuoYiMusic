@@ -65,9 +65,9 @@ const imgUrl = (url: string, param?: number | string) => {
       <h1>推荐歌单</h1>
       <div class="recommend__content grid grid-cols-5 grid-flow-row gap-x-4 gap-y-8">
         <div v-for="(item, i) in recommendSongs" :key="i">
-          <Images :src="imgUrl(item.picUrl, 512)" cursor-pointer alt="item.name" @click="router.push(`/playlist/${item.id}`)">
+          <Images :src="imgUrl(item.picUrl, 512)" cursor-pointer :alt="item.name" @click="router.push(`/playlist/${item.id}`)">
             <template #content>
-              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg"  p-3  rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
+              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg" p-3 rounded="50%" @click.stop="onPlayRecommendedList(item.id)">
                 <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
               </div>
             </template>
@@ -82,13 +82,14 @@ const imgUrl = (url: string, param?: number | string) => {
       <h1>推荐艺人</h1>
       <div class="recommend__content grid grid-cols-6 grid-flow-row gap-8">
         <div v-for="artist in artistTop" :key="artist.id" flex="~ col" min-h-full>
-          <div class="frontCover" relative grow>
-            <img :src="`${artist.picUrl}?param=512y512`" rounded="50%" alt="" />
-            <div class="play__btn -translate-1/2" hidden bg="#fff/20" hover="bg-#fff/30" p-3 rounded="50%" absolute top="1/2" left="1/2">
-              <div i-carbon:play-filled-alt w-8 h-8 bg="#fff" />
-            </div>
-          </div>
-          <div class="describe" text-center>
+          <Images :src="imgUrl(artist.picUrl, 512)" cursor-pointer :alt="artist.name" shape="circle" @click="router.push(`/artist/${artist.id}`)">
+            <template #content>
+              <div class="play__btn" bg="#fff/20" hidden backdrop-blur-lg hover="bg-#fff/30 backdrop-blur-lg" p-3 rounded="50%" @click.stop="onPlayRecommendedList(artist.id)">
+                <div i-mingcute-play-fill w-8 h-8 bg="#fff" />
+              </div>
+            </template>
+          </Images>
+          <div class="describe" cursor-pointer text-center>
             {{ artist.name }}
           </div>
         </div>
