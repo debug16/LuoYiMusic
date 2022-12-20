@@ -31,8 +31,8 @@ onBeforeRouteUpdate((route) => {
       <h1 text-6xl font-700>发现</h1>
     </div>
     <div class="category" mb-6>
-      <ul flex>
-        <li v-for="category,i in categoryList" color='#7a7a7b' :key="i" bg='#eee/65' hover="color-#335eea bg-#eaeffd" px4 py2 rd-3 mr4 cursor="pointer"
+      <ul flex flex-wrap>
+        <li v-for="category,i in categoryList" color='#7a7a7b' :key="i" mb-3 bg='#eee/65' hover="color-#335eea bg-#eaeffd" px4 py2 rd-3 mr4 cursor="pointer"
           @click="router.push(`/explore?category=${category}`)">
           <span inline-block text-lg  font-600>{{category}}</span>
         </li>
