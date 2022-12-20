@@ -78,7 +78,7 @@ const imgUrl = (url: string, param?: number | string) => {
     </div>
     <div v-show="artistTop.length > 0">
       <h1>推荐艺人</h1>
-      <div class="recommend__content grid grid-cols-6 grid-flow-row gap-8">
+      <div class="recommend__content grid grid-cols-6 md:gap-4 grid-flow-row xl:gap-8">
         <div v-for="artist in artistTop" :key="artist.id" flex="~ col" min-h-full>
           <FrontCover
             :src="imgUrl(artist.picUrl, 512)"
@@ -87,6 +87,7 @@ const imgUrl = (url: string, param?: number | string) => {
             :title-center="true"
             :title="artist.name"
             @click-img="router.push(`/artist/${artist.id}`)"
+            @click-title="router.push(`/artist/${artist.id}`)"
           ></FrontCover>
         </div>
       </div>
@@ -126,7 +127,7 @@ const imgUrl = (url: string, param?: number | string) => {
 </template>
 
 <style scoped lang="scss">
-.content > div {
+.main > div {
   @apply mb-10;
 }
 
