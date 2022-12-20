@@ -365,7 +365,7 @@ const playMusicUrl = computed(() => {
   <div class="footerContent" pb-5px>
     <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
       <Icon class="player__minimize" z-10 absolute iconName="i-mingcute-down-fill" top-10 right-10 :w="8" :h="8" color="#ccc" @click="isFullScreenPlayer = false" />
-      <div class="player__container" xl:px="10%" w-full h-full flex="~" justify-end>
+      <div class="player__container" w-full h-full flex="~" justify-end>
         <div class="song" overflow-hidden py="6%" pr="100px" space-y-6 min-w-400px>
           <!-- 图片 -->
           <div h="65%" text-center>
@@ -545,8 +545,8 @@ const playMusicUrl = computed(() => {
   }
 }
 
-.footerContent {
-  @apply w-full xl:px-10% md:px-3%;
+.footerContent,.fullScreenPlayer {
+  @apply w-full px-10%;
 }
 .slideUp {
   @apply translate-y-100%;
