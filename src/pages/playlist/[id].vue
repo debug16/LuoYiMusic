@@ -70,6 +70,10 @@ const imgUrl = (url: string, param?: number | string) => {
   const img = url ? url + param : ''
   return img
 }
+
+const timeFormat = (time:number)=>{
+  return Math.floor(time / 1000 / 60) + ':' + `${Math.floor((time / 1000) % 60)}`.padStart(2, '0')
+}
 </script>
 
 <template>
@@ -94,7 +98,20 @@ const imgUrl = (url: string, param?: number | string) => {
     </Introduce>
     <!-- 歌单歌曲列表 -->
     <div class="songsList" mt-20 tracking-widest>
-      <div
+      <SongsInfo
+      v-for="songs in songsList"
+        :key="songs.id"
+        :name="songs.name"
+        :active="songs.id == playMusicStore.getPlayMusicId"
+        :available="!(songs.fee !== 0 && songs.fee !== 8)"
+        :alia="songs?.alia && songs?.alia[0]?.toString()"
+        :artist="formatSongsSinger(songs?.ar)"
+        :album-name="songs.al.name"
+        :songs-time="songs.dt"
+        :img-src="imgUrl(songs?.al.picUrl, 224)"
+        @songs-dblclick="dblclickPlayMusic(songs)"
+      ></SongsInfo>
+      <!-- <div
         v-for="songs in songsList"
         :key="songs.id"
         w-full
@@ -126,7 +143,7 @@ const imgUrl = (url: string, param?: number | string) => {
         <div basis="10%" text-right>
           <span>{{ Math.floor(songs.dt / 1000 / 60) }}:{{ `${Math.floor((songs.dt / 1000) % 60)}`.padStart(2, '0') }}</span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
