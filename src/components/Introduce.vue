@@ -10,7 +10,7 @@ const { name } = defineProps<Props>()
 
 <template>
   <div class="introduce" flex="~" >
-    <div class="left" shrink-0 w="1/5" mr-15>
+    <div class="left" shrink-0 w="1/5" mr-15 self-center>
       <!-- slot left -->
       <slot name="left" />
     </div>
@@ -39,7 +39,7 @@ const { name } = defineProps<Props>()
   .describe {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     overflow: hidden;
   }
 }

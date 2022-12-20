@@ -113,7 +113,7 @@ const imgUrl = (url: string, param?: number | string) => {
           <div overflow-hidden>
             <div truncate grow-0 w-full font-800 text-lg>
               <span>{{ songs.name }}</span>
-              <span v-if="songs.alia[0]" text="#fff/60"> ({{ songs?.alia && songs?.alia[0]?.toString() }}) </span>
+              <span v-if="songs.alia[0]" text="#7a7a7a/60"> ({{ songs?.alia && songs?.alia[0]?.toString() }}) </span>
             </div>
             <div text-xs color="#000/80" truncate>
               <span>{{ formatSongsSinger(songs?.ar) }}</span>
