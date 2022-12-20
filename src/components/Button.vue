@@ -5,7 +5,7 @@ interface Props {
   bg?: string
 }
 
-const { color = '#335eea', bg = '#8caaff73' } = defineProps<Props>()
+const { color = '#335eea', bg = '#eaeffd' } = defineProps<Props>()
 </script>
 
 <template>
@@ -15,4 +15,6 @@ const { color = '#335eea', bg = '#8caaff73' } = defineProps<Props>()
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+
+</style>
