@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { id } = defineProps<Props>()
-
+const router = useRouter()
 const playMusicStore = usePlayMusicStore()
 
 let artistsR = $ref<any>({})
@@ -28,20 +28,6 @@ onBeforeMount(() => {
     if (res.code === 200) albumR = res.hotAlbums
   })
 })
-
-// watch(y,(old,new_v)=>{
-// console.log("🚀 ~ file: [id].vue:22 ~ watch ~ old,new_v", old,new_v)
-// })
-
-// const getArtists = (id: number | string) => {
-//   artists(id).then((res: any) => {
-//     if (res.code === 200) {
-//       artistsR = res
-//     }
-//     console.log(res)
-//     return res
-//   })
-// }
 
 // 双击播放事件
 const dblclickPlayMusic = (songs: any) => {
@@ -84,7 +70,6 @@ const playMusic = (songsList: any) => {
   if (song) playMusicStore.setPlayMusicList(songsList)
 }
 
-
 const titleContent = computed(() => {
   const artist = artistsR?.artist
   if (artist) return artist.musicSize + ' 首歌 · ' + artist.albumSize + ' 张专辑 · ' + artist.mvSize + ' 个MV'
@@ -107,7 +92,7 @@ const briefDesc = computed(() => {
 <template>
   <div class="artist" py-10 space-y-20>
     <!-- 艺人介绍 -->
-    <div class="artists-introduce">
+    <div class="artists-introduce" v-show="artistsR.artist">
       <Introduce text-5xl :name="name" title="艺人" :title-content="titleContent" :description="briefDesc">
         <template #left>
           <Images :src="imgUrl" shape="circle"></Images>
@@ -122,7 +107,7 @@ const briefDesc = computed(() => {
       </Introduce>
     </div>
     <!-- 热门歌曲 -->
-    <div class="hot-songs" space-y-6>
+    <div class="hot-songs" space-y-6 v-show="artistsR.hotSongs">
       <h1 text-2xl font-600>最新发布</h1>
       <!-- 歌曲列表 -->
       <div class="songs-list" gap-2 grid xl:grid-cols-4 grid-cols-3 lg:grid-cols-3>
@@ -142,17 +127,17 @@ const briefDesc = computed(() => {
       </div>
     </div>
     <!-- 专辑 -->
-    <div class="album" space-y-6>
+    <div class="album" space-y-6 v-show="albumR.length > 0">
       <h1 text-2xl font-600>专辑</h1>
       <div class="album-list" grid grid-cols-5 grid-flow-row gap-x-6 gap-y-9>
         <div v-for="(album, i) in albumR" :key="i">
           <FrontCover
-            :src="imgUrlSize(album.picUrl,512)"
+            :src="imgUrlSize(album.picUrl, 512)"
             :title="album.name"
             :describe="album.description"
             @click-play="null"
-            @click-img="null"
-            @click-title="null"
+            @click-img="router.push(`/album/${album.id}`)"
+            @click-title="router.push(`/album/${album.id}`)"
           >
           </FrontCover>
         </div>
@@ -174,9 +159,9 @@ const briefDesc = computed(() => {
     @apply h-12 w-12;
   }
 }
-.front-cover{
-  &:deep(.title){
-    @apply mt-2
+.front-cover {
+  &:deep(.title) {
+    @apply mt-2;
   }
 }
 </style>
