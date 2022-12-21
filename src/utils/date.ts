@@ -1,6 +1,6 @@
 // 时间戳转时间
-export const formatTime = (time: number) => {
-  const date = new Date(time)
+export const formatTime = (timeStamp: number) => {
+  const date = new Date(timeStamp)
   const year = date.getFullYear()
   const month = date.getMonth() + 1
   const day = date.getDate()
@@ -10,8 +10,8 @@ export const formatTime = (time: number) => {
   return `${[year, month, day].join('-')} ${[hour, minute, second].join(':')}`
 }
 // 时间戳转时间
-export const formatDate = (time: number) => {
-  const date = new Date(time)
+export const formatDate = (timeStamp: number) => {
+  const date = new Date(timeStamp)
   const year = date.getFullYear()
   const month = date.getMonth() + 1
   const day = date.getDate()
