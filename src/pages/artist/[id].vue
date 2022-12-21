@@ -1,31 +1,119 @@
 <script setup lang="ts">
+import { artists } from '~/api/singer'
+import { artistAlbum } from '~/api/album'
+import { formatSongsSinger, isSongsFree } from '~/utils/songs'
+import { imgUrlSize } from '~/utils/img'
+import { usePlayMusicStore } from '~/stores/playMusic'
+
 interface Props {
   id: string
 }
 
 const { id } = defineProps<Props>()
 
+const playMusicStore = usePlayMusicStore()
+
+let artistsR = $ref<any>({})
+let albumR = $ref<any>({})
+
+useWindowScroll()
+
+onBeforeMount(() => {
+  // 获取歌手信息
+  artists(id).then((res: any) => {
+    if (res.code === 200) artistsR = res
+  })
+  // 获取歌手专辑信息
+  artistAlbum(id).then((res: any) => {
+    if (res.code === 200) albumR = res.hotAlbums
+  })
+})
+
+// watch(y,(old,new_v)=>{
+// console.log("🚀 ~ file: [id].vue:22 ~ watch ~ old,new_v", old,new_v)
+// })
+
+// const getArtists = (id: number | string) => {
+//   artists(id).then((res: any) => {
+//     if (res.code === 200) {
+//       artistsR = res
+//     }
+//     console.log(res)
+//     return res
+//   })
+// }
+
+// 双击播放事件
+const dblclickPlayMusic = (songs: any) => {
+  /**
+   * 如果点击的播放的音乐不是收费的，则播放
+   * 0: 免费
+   * 1: 2元购买单曲
+   * 4: 购买专辑
+   * 8: 低音质免费
+   * https://github.com/Binaryify/NeteaseCloudMusicApi/issues/1121
+   */
+  if (isSongsFree(songs?.fee)) {
+    // 设置播放的音乐 id
+    playMusicStore.setPlayMusicId(songs?.id)
+
+    // 设置播放的音乐信息
+    playMusicStore.setPlayMusic(songs)
+
+    playMusicStore.setPlayMusicList(artistsR.hotSongs)
+  }
+}
+
+// 点击艺人信息播放按钮事件
+const playMusic = (songsList: any) => {
+  // 如果歌单列表里没有音乐
+  if (songsList?.length <= 0) return
+
+  // 找到免费的歌曲
+  const song = songsList.find((songs: { fee: number; id: any }) => {
+    if (isSongsFree(songs.fee)) {
+      playMusicStore.setPlayMusicId(songs.id)
+      playMusicStore.setPlayMusic(songs)
+
+      return true
+    }
+    return false
+  })
+
+  // 如果歌单列表里有免费音乐 就放入待播放的音乐列表
+  if (song) playMusicStore.setPlayMusicList(songsList)
+}
+
+
+const titleContent = computed(() => {
+  const artist = artistsR?.artist
+  if (artist) return artist.musicSize + ' 首歌 · ' + artist.albumSize + ' 张专辑 · ' + artist.mvSize + ' 个MV'
+})
+
+const imgUrl = computed(() => {
+  const imgUrl = artistsR?.artist?.picUrl
+  return imgUrlSize(imgUrl, 300)
+})
+
+const name = computed(() => {
+  return artistsR?.artist?.name
+})
+
+const briefDesc = computed(() => {
+  return artistsR?.artist?.briefDesc
+})
 </script>
 
 <template>
   <div class="artist" py-10 space-y-20>
     <!-- 艺人介绍 -->
     <div class="artists-introduce">
-      <Introduce
-        text-5xl
-        name="张杰"
-        title="艺人"
-        title-content="523 首歌 · 118 张专辑 · 96 个 MV"
-        description="张杰，华语LIVE王。
-出道16年来，发行了14张专辑，200多首高品质音乐作品，40多首OST金曲，拥有众多被广为传唱的歌曲。近年来，他创新运用MIX-POP曲风，开辟音乐发展新征程。
-170多个音乐奖项，让他实现内地音乐奖项大满贯。2010年，获得韩国Mnet亚洲音乐盛典“亚洲之星”大奖；2014年，获得第42届全美音乐奖“年度国际艺人大奖”，成为内地首位获得该奖项的歌手。
-至今为止，举办了 61场大型演唱会，巡演足迹踏过海内外30余座城市，累计130万人观看。2018、2019连续两年打破鸟巢单场演唱会票房纪录。"
-      >
+      <Introduce text-5xl :name="name" title="艺人" :title-content="titleContent" :description="briefDesc">
         <template #left>
-          <Images src="https://p1.music.126.net/y0e-xAsAkTIQ-AiQ1GdW7w==/109951167519174642.jpg?param=1024y1024" shape="circle"></Images>
+          <Images :src="imgUrl" shape="circle"></Images>
         </template>
         <template #footer>
-          <Button @click="null" text="播放">
+          <Button @click="playMusic(artistsR.hotSongs)" text="播放">
             <template #icon>
               <div i-carbon:play-filled-alt w-5 h-5 color="#335eea" />
             </template>
@@ -37,31 +125,31 @@ const { id } = defineProps<Props>()
     <div class="hot-songs" space-y-6>
       <h1 text-2xl font-600>最新发布</h1>
       <!-- 歌曲列表 -->
-      <div class="songs-list" grid grid-cols-4>
-        <div v-for="(item, i) in 12" :key="i" class="songs-item" flex p-2 rounded-xl hover="bg-#eee/50">
-          <!-- 图片 -->
-          <div class="songs-img">
-            <Images w-12 h-12 src="https://p1.music.126.net/VuJFMbXzpAProbJPoXLv7g==/7721870161993398.jpg?param=224y224"></Images>
-          </div>
-          <!-- 歌曲信息 -->
-          <div class="songs-info" flex flex-col justify-between ml-2>
-            <!-- 歌曲名 -->
-            <div class="songs-name" text-base font-700>走马</div>
-            <!-- 歌手 -->
-            <div class="songs-artist" text-xs color="#000/80">陈粒</div>
-          </div>
-        </div>
+      <div class="songs-list" gap-2 grid xl:grid-cols-4 grid-cols-3 lg:grid-cols-3>
+        <SongsInfo
+          v-for="(song, i) in artistsR?.hotSongs"
+          :key="i"
+          flex
+          rounded-xl
+          hover="bg-#eee/50"
+          :img-src="imgUrlSize(song.al?.picUrl, 100)"
+          :available="isSongsFree(song.privilege.fee)"
+          :name="song?.name"
+          :artist="formatSongsSinger(song.ar)"
+          :active="song.id == playMusicStore.getPlayMusicId"
+          @songs-dblclick="dblclickPlayMusic(song)"
+        />
       </div>
     </div>
     <!-- 专辑 -->
     <div class="album" space-y-6>
       <h1 text-2xl font-600>专辑</h1>
-      <div class="album-list" grid grid-cols-5 grid-flow-row gap-x-4 gap-y-9>
-        <div v-for="(item, i) in 12" :key="i">
+      <div class="album-list" grid grid-cols-5 grid-flow-row gap-x-6 gap-y-9>
+        <div v-for="(album, i) in albumR" :key="i">
           <FrontCover
-            src="https://p1.music.126.net/YaX8ikdwH5eSPxIYAq_QZA==/109951164715645646.jpg?param=512y512"
-            title="悠长假期"
-            describe="悠长假期fdsafd悠长假期saf悠长假期d悠长假期safdsafffffffffffffffffffff"
+            :src="imgUrlSize(album.picUrl,512)"
+            :title="album.name"
+            :describe="album.description"
             @click-play="null"
             @click-img="null"
             @click-title="null"
@@ -76,5 +164,19 @@ const { id } = defineProps<Props>()
 <style scoped lang="scss">
 .introduce :deep(.songsName) {
   @apply text-5xl;
+}
+
+.songs-info {
+  &:deep(.songs .name) {
+    @apply text-sm v-text-top;
+  }
+  &:deep(.songs img) {
+    @apply h-12 w-12;
+  }
+}
+.front-cover{
+  &:deep(.title){
+    @apply mt-2
+  }
 }
 </style>
