@@ -8,3 +8,12 @@ import request from '~/utils/request'
 export const artistTopList = (type?: number): Promise<any> => {
   return request.get('toplist/artist', { params: { type } })
 }
+
+/**
+ * 获取歌手信息
+ * @param id 歌手id
+ * @returns 
+ */
+export const artists = (id?: number | string): Promise<any> => {
+  return request.get('artists', { params: { id } })
+}
