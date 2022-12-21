@@ -43,6 +43,7 @@ const goGithub = ()=>{
       <div class="item" @click="router.push('/login')">登录</div>
       <div class="item">注册</div>
       <div class="item" @click="goGithub">Github仓库</div>
+      <div class="item" @click="goGithub">下载桌面应用</div>
     </Menu>
   </header>
 </template>
