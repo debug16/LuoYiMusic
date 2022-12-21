@@ -81,7 +81,7 @@ const imgUrl = (url: string, param?: number | string) => {
       <div class="recommend__content grid grid-cols-6 md:gap-4 grid-flow-row xl:gap-8">
         <div v-for="artist in artistTop" :key="artist.id" flex="~ col" min-h-full>
           <FrontCover
-            :src="imgUrl(artist.picUrl, 512)"
+            :src="imgUrl(artist.picUrl, 300)"
             :alt="artist.name"
             shape="circle"
             :title-center="true"

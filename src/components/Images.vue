@@ -5,12 +5,13 @@ const props = defineProps({
     default: 'square',
     validator: (v: string) => ['circle', 'square'].includes(v),
   },
+  src:String
 })
 </script>
 
 <template>
   <div class="images" :class="props.shape">
-    <img v-bind:="$attrs" />
+    <img v-bind:="$attrs" :src="src"/>
     <div class="images__content" v-if="$slots.content">
       <slot name="content" />
     </div>
