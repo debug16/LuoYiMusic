@@ -5,19 +5,18 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Botton: typeof import('./components/Botton.vue')['default']
     Button: typeof import('./components/Button.vue')['default']
-    Counter: typeof import('./components/Counter.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
+    FrontCover: typeof import('./components/FrontCover.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
     Icon: typeof import('./components/Icon.vue')['default']
-    IconPlay: typeof import('./components/Icon/IconPlay.vue')['default']
+    IconPlay: typeof import('./components/IconPlay.vue')['default']
     Images: typeof import('./components/Images.vue')['default']
     Introduce: typeof import('./components/Introduce.vue')['default']
     Menu: typeof import('./components/Menu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SongsList: typeof import('./components/SongsList.vue')['default']
+    SongsInfo: typeof import('./components/SongsInfo.vue')['default']
   }
 }
 
