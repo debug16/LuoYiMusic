@@ -69,16 +69,4 @@ main {
 .slideUp {
   @apply translate-y-100%
 }
-.header::after,
-.footer::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: -1;
-  @apply filter:blur(1px) 
-}
 </style>
