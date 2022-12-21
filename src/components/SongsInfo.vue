@@ -21,8 +21,7 @@ const { available = false, active = false } = defineProps<Props>()
 </script>
 
 <template>
-      
-  <div class="songs-info" rounded-xl>
+  <div class="songs-info" w-full rounded-xl>
     <div
       w-full
       flex="~"
@@ -33,22 +32,22 @@ const { available = false, active = false } = defineProps<Props>()
       :title="!available ? 'Only VIP Can Play' : ''"
       @dblclick="$emit('songsDblclick')"
     >
-      <div class="songs" flex="~ grow-0" items-center w="50%" pr-5>
-        <div h-13 w-13 shrink-0 mr-5>
-          <img h-full rounded-lg :src="imgSrc" alt="" />
+      <div class="songs" flex="~" flex-1 max="w-100%" :class="{'max-w-50%':albumName || songsTime ,'max-w-100%': !albumName && !songsTime }"  items-center pr-5>
+        <div  shrink-0 mr-5>
+          <img h-13 w-13 rounded-lg :src="imgSrc" alt="" />
         </div>
-        <div overflow-hidden>
-          <div truncate grow-0 w-full font-800 text-lg>
-            <span>{{ name }}</span>
-            <span v-if="alia" text="#fff/60"> ({{ alia }}) </span>
+        <div overflow-hidden max="w-100%" >
+          <div truncate grow-0 max="w-full" font-800 text-lg>
+            <span class="name" w-full overflow-hidden>{{ name }}</span>
+            <span  truncate v-if="alia" text="#7a7a7a/60"> ({{ alia }}) </span>
           </div>
           <div text-xs color="#000/80" truncate>
-            <span>{{ artist }}</span>
+            <span overflow-hidden>{{ artist }}</span>
           </div>
         </div>
       </div>
       <div v-if="albumName" basis="40%" font-bold text-sm>
-        <span>{{ albumName }}</span>
+        <span line-feed line-clamp-1>{{ albumName }}</span>
       </div>
       <div v-if="songsTime" basis="10%" text-right>
         <span>{{ Math.floor(songsTime / 1000 / 60) }}:{{ `${Math.floor((songsTime / 1000) % 60)}`.padStart(2, '0') }}</span>

@@ -14,7 +14,7 @@ const { name } = defineProps<Props>()
       <!-- slot left -->
       <slot name="left" />
     </div>
-    <div class="songsContent" font-400 flex="~ col" justify-evenly items-start min-h-full>
+    <div class="songsContent" space-y-4 font-400 flex="~ col" justify-evenly items-start min-h-full>
       <div class="songsName" text-3xl font-900>
         {{ name }}
       </div>
