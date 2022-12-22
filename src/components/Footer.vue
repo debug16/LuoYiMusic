@@ -448,17 +448,17 @@ const playMusicUrl = computed(() => {
     <div h-full>
       <footer class="footer" h-full @click="isFullScreenPlayer = true">
         <div flex="~" relative items-stretch justify-between items-center h-full>
-          <div class="left" flex="~" text-2xl space-x-3>
+          <div class="left" max="w-30%" flex="~" text-2xl space-x-3>
             <div h-50px w-50px flex="shrink-0" class="footer__music--img">
               <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
             </div>
             <div class="footer__music--title" text-base flex="~ col" justify-evenly>
               <!-- 歌名 -->
-              <div class="footer__music--song" font-600 color="#000" text-base overflow-hidden>
+              <div class="footer__music--song" :title="playMusicStore.getPlayMusicName" line-feed line-clamp-1 font-600 color="#000" text-base overflow-hidden>
                 {{ playMusicStore.getPlayMusicName }}
               </div>
               <!-- 歌手 -->
-              <div class="footer__music--singer" text-xs color="#000/65">
+              <div class="footer__music--singer" :title="playMusicStore.getPlayMusicSongsSinger" line-feed line-clamp-1 text-xs color="#000/65">
                 {{ playMusicStore.getPlayMusicSongsSinger }}
               </div>
             </div>
