@@ -16,3 +16,7 @@ export const artistAlbum = (id: number | string, limit: number = 30) => {
 export const album = (id: number | string) => {
   return request.get('album', { params: { id } })
 }
+
+export const albumNew = (params?: { limit?: number, offset?: number, area?: string }) => {
+  return request.get('album/new', { params })
+}
