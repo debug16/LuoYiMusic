@@ -8,6 +8,13 @@ import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 
 const playMusicStore = usePlayMusicStore()
+const router:any = useRouter()
+const route = useRoute()
+// console.log(route)
+
+// onBeforeRouteUpdate((to:any,from:any)=>{
+//   console.log("🚀 ~ file: Footer.vue:18 ~ onBeforeRouteUpdate ~ to,from", to,from)
+// })
 
 // 播放栏被点击
 let isFullScreenPlayer = $ref(false)
@@ -340,6 +347,16 @@ watchEffect(() => {
 const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
 })
+
+const path = computed(()=>{
+  console.log(router.currentRoute);
+  return router.currentRoute.name
+})
+
+watch(()=>router.currentRoute,(n_v,old_v) => {
+  console.log("🚀 ~ file: Footer.vue:352 ~ watch ~ n_v,old_v", n_v,old_v)  
+})
+
 </script>
 
 <template>
@@ -474,6 +491,7 @@ const playMusicUrl = computed(() => {
             <!-- </div> -->
           </div>
           <div class="right" @click.stop="null" flex="~" items-center space-x-3 justify-end>
+            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{'active':route.name==='next'}"/> 
             <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-carbon:volume-mute-filled" :w="4" :h="4" @click="onUnmute" />
             <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-carbon:volume-down-filled" :w="4" :h="4" @click="onMute" />
             <Icon v-else iconName="i-carbon:volume-up-filled" :w="4" :h="4" @click="onMute" />
@@ -541,6 +559,11 @@ const playMusicUrl = computed(() => {
 .right {
   .volume {
     padding: 5px 0 #{!important};
+  }
+  .active.icon{
+    :deep(.i-zondicons-music-playlist){
+      @apply bg-#335eea;
+    }
   }
 }
 

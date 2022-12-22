@@ -32,6 +32,9 @@ export const usePlayMusicStore = defineStore('playMusic', {
     getPlayMusicId(state: any) {
       return state.activePlayMusic.id
     },
+    getPlayMusic(state:any){
+      return state.activePlayMusic.music
+    },
     // 获取播放的音乐信息
     getPlayMusicName(state: any) {
       return state.activePlayMusic?.music?.name
