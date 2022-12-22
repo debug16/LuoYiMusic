@@ -4,7 +4,7 @@ import { artistAlbum } from '~/api/album'
 import { formatSongsSinger, isSongsFree } from '~/utils/songs'
 import { imgUrlSize } from '~/utils/img'
 import { usePlayMusicStore } from '~/stores/playMusic'
-
+import { formatDate } from '~/utils/date'
 interface Props {
   id: string
 }
@@ -134,7 +134,7 @@ const briefDesc = computed(() => {
           <FrontCover
             :src="imgUrlSize(album.picUrl, 512)"
             :title="album.name"
-            :describe="album.description"
+            :describe="formatDate(album.publishTime)"
             @click-play="null"
             @click-img="router.push(`/album/${album.id}`)"
             @click-title="router.push(`/album/${album.id}`)"
@@ -155,8 +155,8 @@ const briefDesc = computed(() => {
   &:deep(.songs .name) {
     // @apply text-sm v-text-top;
   }
-  &:deep(.nameBox){
-    @apply text-sm v-text-top
+  &:deep(.nameBox) {
+    @apply text-sm v-text-top;
   }
   &:deep(.songs img) {
     @apply h-11 w-11;
@@ -164,7 +164,7 @@ const briefDesc = computed(() => {
 }
 .front-cover {
   &:deep(.title) {
-    @apply mt-2;
+    @apply mt-2 line-clamp-1;
   }
 }
 </style>
