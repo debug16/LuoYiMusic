@@ -3,9 +3,17 @@ const router = useRouter()
 const route = useRoute()
 
 const menuRef: any = $ref()
-let searchKeywords = $ref()
+let searchKeywords: string = $ref()
 const showMenu = (e: MouseEvent) => {
   menuRef.openMenu(e)
+}
+
+// 回车搜索事件
+const search = () => {
+  if (searchKeywords) {
+    router.push(`/search/${searchKeywords}`)
+    searchKeywords = ''
+  }
 }
 
 const goGithub = () => {
@@ -32,7 +40,7 @@ const goGithub = () => {
     </div>
     <div class="right" flex="~" space-x-3 w="1/4" justify-end>
       <div class="search">
-        <input type="text" v-model="searchKeywords" h-8 rounded-md placeholder="search" px-2 bg="#eee/65" @keyup.enter="router.push(`/search/${searchKeywords}`)" outline-none />
+        <input type="text" v-model.trim="searchKeywords" h-8 rounded-md placeholder="search" px-2 bg="#eee/65" @keyup.enter="search" outline-none />
       </div>
       <div class="headPortrait">
         <images w-8 h-8 @click="showMenu" src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" shape="circle" />
