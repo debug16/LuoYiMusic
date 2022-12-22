@@ -2,8 +2,8 @@ import axios from 'axios'
 import type { AxiosInstance } from 'axios'
 
 const service: AxiosInstance = axios.create({
-  ''
   // baseURL: ''
+  baseURL: ''
   // baseURL: ''
   // baseURL: ''
   timeout: 10000,
