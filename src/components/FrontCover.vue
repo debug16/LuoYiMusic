@@ -34,7 +34,7 @@ const titleClass = reactive({
       {{ title }}
     </div>
 
-    <div class="describe" v-if="!describe" cursor-pointer @click.stop="$emit('clickDescribe')" :title="title">
+    <div class="describe" v-if="describe" cursor-pointer @click.stop="$emit('clickDescribe')" :title="title">
       {{ describe }}
     </div>
 
