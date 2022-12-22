@@ -19,6 +19,10 @@ const search = () => {
 const goGithub = () => {
   window.open('https://github.com/debug16/LuoYiMusic', '_blank')
 }
+
+const download = ()=>{
+  window.open('http://m.debug16.cn/download/LuoYiMusic.msi')
+}
 </script>
 
 <template>
@@ -49,9 +53,9 @@ const goGithub = () => {
     <Menu ref="menuRef">
       <div class="item" @click="router.push('/settings')">设置</div>
       <div class="item" @click="router.push('/login')">登录</div>
-      <div class="item">注册</div>
+      <!-- <div class="item">注册</div> -->
       <div class="item" @click="goGithub">Github仓库</div>
-      <div class="item" @click="goGithub">下载桌面应用</div>
+      <div class="item" @click="download">下载桌面应用</div>
     </Menu>
   </header>
 </template>
