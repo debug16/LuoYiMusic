@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { artists } from '~/api/singer'
-import { artistAlbum } from '~/api/album'
+import { album, artistAlbum } from '~/api/album'
 import { formatSongsSinger, isSongsFree } from '~/utils/songs'
 import { imgUrlSize } from '~/utils/img'
 import { usePlayMusicStore } from '~/stores/playMusic'
@@ -70,6 +70,28 @@ const playMusic = (songsList: any) => {
   if (song) playMusicStore.setPlayMusicList(songsList)
 }
 
+// 点击专辑播放按钮
+const onPlayAlbum = (id: number) => {
+  album(id).then((res: any) => {
+    let albumSongList: Array<any> = []
+    if (res.code === 200) albumSongList = res.songs
+    // 如果专辑列表里没有音乐
+    if (albumSongList?.length <= 0) return
+    // 找到免费的歌曲
+    const song = albumSongList.find((songs: { fee: number; id: any }) => {
+      if (isSongsFree(songs.fee)) {
+        playMusicStore.setPlayMusicId(songs.id)
+        playMusicStore.setPlayMusic(songs)
+        return true
+      }
+      return false
+    })
+    // 如果专辑列表里有免费音乐 就放入待播放的音乐列表
+    if (song) playMusicStore.setPlayMusicList(albumSongList)
+
+  })
+}
+
 const titleContent = computed(() => {
   const artist = artistsR?.artist
   if (artist) return artist.musicSize + ' 首歌 · ' + artist.albumSize + ' 张专辑 · ' + artist.mvSize + ' 个MV'
@@ -135,9 +157,9 @@ const briefDesc = computed(() => {
             :src="imgUrlSize(album.picUrl, 512)"
             :title="album.name"
             :describe="formatDate(album.publishTime)"
-            @click-play="null"
             @click-img="router.push(`/album/${album.id}`)"
             @click-title="router.push(`/album/${album.id}`)"
+            @click-play="onPlayAlbum(album.id)"
           >
           </FrontCover>
         </div>
