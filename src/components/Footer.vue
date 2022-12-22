@@ -310,8 +310,7 @@ const { space, down, up, left, right, n, p, m, Escape, f } = $(useMagicKeys({ pa
 
 // 快捷键监听
 watchEffect(() => {
-  // audio 还没初始化 或者焦点在输入框 不做操作
-  if (!audio || !notUsingInput) return
+  if (!audio || !playMusicStore.getPlayMusicId || !notUsingInput) return
   // 空格 暂停音乐
   if (space) togglePlayMusic()
   // 下键 降低音量
@@ -331,7 +330,6 @@ watchEffect(() => {
   // ESC键 取消歌词全屏
   if (Escape) isFullScreenPlayer = false
   // F键(full) 歌词全屏切换
-  // TODO 需要判断是否有播放的音乐 不然先按 f 键后再播放音乐会直接弹出歌词全屏。 做了判断 但是不知道为什么 依赖注入 更新状态很慢 会要很长时间才更新 所以会导致f键失效
   if (f) isFullScreenPlayer = !isFullScreenPlayer
 })
 
