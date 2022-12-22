@@ -10,11 +10,6 @@ import 'vue-slider-component/theme/default.css'
 const playMusicStore = usePlayMusicStore()
 const router:any = useRouter()
 const route = useRoute()
-// console.log(route)
-
-// onBeforeRouteUpdate((to:any,from:any)=>{
-//   console.log("🚀 ~ file: Footer.vue:18 ~ onBeforeRouteUpdate ~ to,from", to,from)
-// })
 
 // 播放栏被点击
 let isFullScreenPlayer = $ref(false)
@@ -347,16 +342,6 @@ watchEffect(() => {
 const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
 })
-
-const path = computed(()=>{
-  console.log(router.currentRoute);
-  return router.currentRoute.name
-})
-
-watch(()=>router.currentRoute,(n_v,old_v) => {
-  console.log("🚀 ~ file: Footer.vue:352 ~ watch ~ n_v,old_v", n_v,old_v)  
-})
-
 </script>
 
 <template>
