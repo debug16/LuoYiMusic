@@ -24,13 +24,19 @@ let albums: any = $ref()
 let songs: any = $ref()
 
 const getSearch = (keyword: string) => {
+  // 搜索艺人
+  // @ts-ignore
   search({ keywords: keyword, type: 100, limit: 3 }).then((res: any) => {
     if (res.code === 200) artists = res.result.artists
   })
+  // @ts-ignore
+  // 搜索专辑
   search({ keywords: keyword, type: 10, limit: 3 }).then((res: any) => {
     if (res.code === 200) albums = res.result.albums
   })
-  search({ keywords: keyword, type: 1, limit: 16 })
+  // @ts-ignore
+  // 搜索单曲
+  search({ keywords: keyword, type: 1, limit: 24 })
     .then((res: any) => {
       if (res.code === 200) {
         const songList = res.result.songs
@@ -49,19 +55,9 @@ const getSearch = (keyword: string) => {
 
 onBeforeMount(() => getSearch(keywords))
 
-// 监听地址变化
-// watch(
-//   () => keywords,
-//   (nv: any, old: any) => {
-//     nv && getSearch(nv)
-//   }
-// )
-
-onBeforeRouteUpdate((to,from) => {
-  // console.log("🚀 ~ file: [keywords].vue:61 ~ onBeforeRouteUpdate ~ to,from", to,from)
-  
+// 获取路由变化 主要用于搜索再在搜索
+onBeforeRouteUpdate((to,from) => {  
   getSearch(to.params.keywords as string)
-  // console.log('🚀 ~ file: [keywords].vue:61 ~ onBeforeRouteUpdate ~ updateGuard', updateGuard.params.keywords)
 })
 
 // 双击播放事件
@@ -127,7 +123,6 @@ const dblclickPlayMusic = (song: any) => {
       </div>
     </div>
     <div class="songs">
-      <!-- <h1 text-2xl font-600 mb-4>歌曲</h1> -->
       <div class="songs-title" flex justify-between items-center mb-4>
         <h1 text-xl font-600>歌曲</h1>
         <div class="more" text-sm>查看更多</div>

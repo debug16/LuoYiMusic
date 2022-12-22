@@ -40,10 +40,10 @@ const goGithub = () => {
     </div>
     <div class="right" flex="~" space-x-3 w="1/4" justify-end>
       <div class="search">
-        <input type="text" v-model.trim="searchKeywords" h-8 rounded-md placeholder="search" px-2 bg="#eee/65" @keyup.enter="search" outline-none />
+        <input type="text" v-model.trim="searchKeywords" h-8 rounded-md placeholder="搜索" px-2 bg="#eee/65" @keyup.enter="search" outline-none />
       </div>
       <div class="headPortrait">
-        <images w-8 h-8 @click="showMenu" src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" shape="circle" />
+        <images w-8 h-8 @click="showMenu" src="http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60" shape="circle" />
       </div>
     </div>
     <Menu ref="menuRef">
