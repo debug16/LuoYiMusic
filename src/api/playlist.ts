@@ -25,3 +25,20 @@ export const personalized = (limit?: number): Promise<PersonalizedReturn> | Prom
 export const playlistDetail = (id: number | string): Promise<any> | Promise<never> => {
   return request.get('playlist/detail', { params: { id } })
 }
+
+/**
+ *  调用此接口 , 可获取精品歌单标签列表
+ * @returns 
+ */
+export const playlistHighqualityTags = () => {
+  return request.get('playlist/highquality/tags')
+}
+
+/**
+ * 获取精品歌单
+ * @param params 
+ * @returns 
+ */
+export const topPlaylistHighquality = (params?: { cat?: any, limit?: number, before?: number }) => {
+  return request.get('top/playlist/highquality', { params })
+}
