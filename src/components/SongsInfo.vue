@@ -32,12 +32,12 @@ const { available = false, active = false } = defineProps<Props>()
       :title="!available ? 'Only VIP Can Play' : ''"
       @dblclick="$emit('songsDblclick')"
     >
-      <div class="songs" flex="~" flex-1 max="w-100%" :class="{'max-w-50%':albumName || songsTime ,'max-w-100%': !albumName && !songsTime }"  items-center pr-5>
+      <div class="songs" items-stretch  flex="~" flex-1 max="w-100%" :class="{'max-w-50%':albumName || songsTime ,'max-w-100%': !albumName && !songsTime }"  items-center pr-5>
         <div  shrink-0 mr-5>
           <img h-13 w-13 rounded-lg :src="imgSrc" alt="" />
         </div>
-        <div overflow-hidden max="w-100%" >
-          <div truncate grow-0 max="w-full" font-800 text-lg>
+        <div overflow-hidden flex="~ col" justify-around max="w-100%" >
+          <div class="nameBox" truncate grow-0 max="w-full" font-800 text-lg leading-initial>
             <span class="name" w-full overflow-hidden>{{ name }}</span>
             <span  truncate v-if="alia" text="#7a7a7a/60"> ({{ alia }}) </span>
           </div>
