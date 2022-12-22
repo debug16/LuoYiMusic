@@ -5,13 +5,13 @@ const props = defineProps({
     default: 'square',
     validator: (v: string) => ['circle', 'square'].includes(v),
   },
-  src:String
+  src: String,
 })
 </script>
 
 <template>
   <div class="images" :class="props.shape">
-    <img v-bind:="$attrs" :src="src"/>
+    <img v-bind:="$attrs" :src="src" />
     <div class="images__content" v-if="$slots.content">
       <slot name="content" />
     </div>
@@ -25,6 +25,7 @@ const props = defineProps({
 .images {
   @apply relative;
   &.circle {
+    @apply rounded-50% overflow-hidden;
     img {
       @apply rounded-50%;
     }

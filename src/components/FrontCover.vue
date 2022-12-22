@@ -24,7 +24,7 @@ const titleClass = reactive({
 </script>
 
 <template>
-  <div class="front-cover">
+  <div class="front-cover" h-full flex="~ col">
     <Images :src="src" cursor-pointer :shape="shape" @click.stop="$emit('clickImg')">
       <template #content v-if="showIcon">
         <IconPlay @click.stop="$emit('clickPlay')"></IconPlay>
@@ -34,7 +34,7 @@ const titleClass = reactive({
       {{ title }}
     </div>
 
-    <div class="describe" v-if="describe" cursor-pointer @click.stop="$emit('clickDescribe')" :title="title">
+    <div class="describe" v-if="!describe" cursor-pointer @click.stop="$emit('clickDescribe')" :title="title">
       {{ describe }}
     </div>
 
