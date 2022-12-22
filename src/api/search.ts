@@ -1,6 +1,6 @@
 import request from '~/utils/request'
 
-interface searchParam {
+export interface searchParam {
   keywords: string,
   type?: number,
   limit?: number,
@@ -16,5 +16,6 @@ interface searchParam {
  * @returns 
  */
 export const search = (param: searchParam) => {
-  return request.get('search/keywords', { params: param })
+  if (param.keywords)
+    return request.get('search/keywords', { params: param })
 }
