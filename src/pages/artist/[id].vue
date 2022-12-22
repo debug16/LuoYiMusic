@@ -153,10 +153,13 @@ const briefDesc = computed(() => {
 
 .songs-info {
   &:deep(.songs .name) {
-    @apply text-sm v-text-top;
+    // @apply text-sm v-text-top;
+  }
+  &:deep(.nameBox){
+    @apply text-sm v-text-top
   }
   &:deep(.songs img) {
-    @apply h-12 w-12;
+    @apply h-11 w-11;
   }
 }
 .front-cover {
