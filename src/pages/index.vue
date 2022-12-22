@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { personalized, playlistDetail } from '~/api/playlist'
+import { artists as  artist} from '~/api/singer'
 import { isSongsFree } from '~/utils/songs'
 import { artistTopList } from '~/api/singer'
 import { usePlayMusicStore } from '~/stores/playMusic'
@@ -52,6 +53,27 @@ const onPlayRecommendedList = (playlistId: number) => {
   })
 }
 
+// 点击艺人封面播放按钮
+const onPlayArtist = (id: number) => {
+  artist(id).then((res: any) => {
+    let artistSongList: Array<any> = []
+    if (res.code === 200) artistSongList = res.hotSongs
+    // 如果艺人列表里没有音乐
+    if (artistSongList?.length <= 0) return
+    // 找到免费的歌曲
+    const song = artistSongList.find((songs: { fee: number; id: any }) => {
+      if (isSongsFree(songs.fee)) {
+        playMusicStore.setPlayMusicId(songs.id)
+        playMusicStore.setPlayMusic(songs)
+        return true
+      }
+      return false
+    })
+    // 如果艺人列表里有免费音乐 就放入待播放的音乐列表
+    if (song) playMusicStore.setPlayMusicList(artistSongList)
+  })
+}
+
 const imgUrl = (url: string, param?: number | string) => {
   param = param ? `?param=${param}y${param}` : ''
   const img = url ? url + param : ''
@@ -88,6 +110,7 @@ const imgUrl = (url: string, param?: number | string) => {
             :title="artist.name"
             @click-img="router.push(`/artist/${artist.id}`)"
             @click-title="router.push(`/artist/${artist.id}`)"
+            @click-play="onPlayArtist(artist.id)"
           ></FrontCover>
         </div>
       </div>

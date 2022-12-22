@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { search } from '~/api/search'
-import { imgUrlSize } from '~/utils/img'
 import { songDetail } from '~/api/song'
-import { isSongsFree } from '~/utils/songs'
-import { formatSongsSinger } from '~/utils/songs'
+import { album } from '~/api/album'
+import { artists as artist} from '~/api/singer'
+import { imgUrlSize } from '~/utils/img'
+import { isSongsFree, formatSongsSinger } from '~/utils/songs'
 import { usePlayMusicStore } from '~/stores/playMusic'
 import { onBeforeRouteUpdate } from 'vue-router'
 
@@ -56,9 +57,51 @@ const getSearch = (keyword: string) => {
 onBeforeMount(() => getSearch(keywords))
 
 // 获取路由变化 主要用于搜索再在搜索
-onBeforeRouteUpdate((to,from) => {  
+onBeforeRouteUpdate((to, from) => {
   getSearch(to.params.keywords as string)
 })
+
+// 点击专辑封面播放按钮
+const onPlayAlbum = (id: number) => {
+  album(id).then((res: any) => {
+    let albumSongList: Array<any> = []
+    if (res.code === 200) albumSongList = res.songs
+    // 如果专辑列表里没有音乐
+    if (albumSongList?.length <= 0) return
+    // 找到免费的歌曲
+    const song = albumSongList.find((songs: { fee: number; id: any }) => {
+      if (isSongsFree(songs.fee)) {
+        playMusicStore.setPlayMusicId(songs.id)
+        playMusicStore.setPlayMusic(songs)
+        return true
+      }
+      return false
+    })
+    // 如果专辑列表里有免费音乐 就放入待播放的音乐列表
+    if (song) playMusicStore.setPlayMusicList(albumSongList)
+  })
+}
+
+// 点击艺人封面播放按钮
+const onPlayArtist = (id: number) => {
+  artist(id).then((res: any) => {
+    let artistSongList: Array<any> = []
+    if (res.code === 200) artistSongList = res.hotSongs
+    // 如果艺人列表里没有音乐
+    if (artistSongList?.length <= 0) return
+    // 找到免费的歌曲
+    const song = artistSongList.find((songs: { fee: number; id: any }) => {
+      if (isSongsFree(songs.fee)) {
+        playMusicStore.setPlayMusicId(songs.id)
+        playMusicStore.setPlayMusic(songs)
+        return true
+      }
+      return false
+    })
+    // 如果艺人列表里有免费音乐 就放入待播放的音乐列表
+    if (song) playMusicStore.setPlayMusicList(artistSongList)
+  })
+}
 
 // 双击播放事件
 const dblclickPlayMusic = (song: any) => {
@@ -92,14 +135,15 @@ const dblclickPlayMusic = (song: any) => {
         </div>
         <div class="artist-list" grid-cols-3 gap-x-4 grid>
           <FrontCover
-            v-for="(artist, i) in artists"
-            :key="i"
+            v-for="artist in artists"
+            :key="artist.id"
             :src="imgUrlSize(artist?.img1v1Url, 512)"
             shape="circle"
             :title-center="true"
             :title="artist?.name"
             @click-img="route.push(`/artist/${artist.id}`)"
             @click-title="route.push(`/artist/${artist.id}`)"
+            @click-play="onPlayArtist(artist.id)"
           ></FrontCover>
         </div>
       </div>
@@ -118,6 +162,7 @@ const dblclickPlayMusic = (song: any) => {
             :title="album?.name"
             @click-img="route.push(`/album/${album.id}`)"
             @click-title="route.push(`/album/${album.id}`)"
+            @click-play="onPlayAlbum(album.id)"
           ></FrontCover>
         </div>
       </div>
