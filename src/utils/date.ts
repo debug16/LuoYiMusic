@@ -9,7 +9,7 @@ export const formatTime = (timeStamp: number) => {
   const second = date.getSeconds()
   return `${[year, month, day].join('-')} ${[hour, minute, second].join(':')}`
 }
-// 时间戳转时间
+// 时间戳转日期
 export const formatDate = (timeStamp: number) => {
   const date = new Date(timeStamp)
   const year = date.getFullYear()
