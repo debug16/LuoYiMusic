@@ -3,27 +3,27 @@ const router = useRouter()
 const route = useRoute()
 
 const menuRef: any = $ref()
-
+let searchKeywords = $ref()
 const showMenu = (e: MouseEvent) => {
   menuRef.openMenu(e)
 }
 
-const goGithub = ()=>{
-  window.open('https://github.com/debug16/LuoYiMusic','_blank');
+const goGithub = () => {
+  window.open('https://github.com/debug16/LuoYiMusic', '_blank')
 }
 </script>
 
 <template>
   <header flex="~" justify-between items-center h-full>
     <div class="left" flex="~" text-2xl space-x-6 w="1/4">
-      <Icon iconName="i-mingcute-left-fill" @click="router.back()"/>
-      <Icon iconName="i-mingcute-right-fill" @click="router.go(1)"/>
+      <Icon iconName="i-mingcute-left-fill" @click="router.back()" />
+      <Icon iconName="i-mingcute-right-fill" @click="router.go(1)" />
     </div>
     <div class="center" flex="~" space-x-6 text-lg font-700>
       <div :class="{ active: route.path === '/' }" @click="router.push('/')" icon>
         <span>首页</span>
       </div>
-      <div @click="router.push('/explore')" :class="{ active: route.path === '/explore' }" icon> 
+      <div @click="router.push('/explore')" :class="{ active: route.path === '/explore' }" icon>
         <span>发现</span>
       </div>
       <div icon>
@@ -32,7 +32,7 @@ const goGithub = ()=>{
     </div>
     <div class="right" flex="~" space-x-3 w="1/4" justify-end>
       <div class="search">
-        <input type="text" h-8 rounded-md placeholder="search" px-2 bg="#eee/65" outline-none />
+        <input type="text" v-model="searchKeywords" h-8 rounded-md placeholder="search" px-2 bg="#eee/65" @keyup.enter="router.push(`/search/${searchKeywords}`)" outline-none />
       </div>
       <div class="headPortrait">
         <images w-8 h-8 @click="showMenu" src="http://p2.music.126.net/Gwxpt7cgsg-vj1zzAkkvtA==/109951167541643053.jpg?param=512y512" shape="circle" />
