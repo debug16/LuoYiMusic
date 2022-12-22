@@ -8,7 +8,7 @@ import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 
 const playMusicStore = usePlayMusicStore()
-const router:any = useRouter()
+const router: any = useRouter()
 const route = useRoute()
 
 // 播放栏被点击
@@ -308,11 +308,12 @@ const onEventFired = (e: KeyboardEvent) => {
   }
 }
 // 获取快捷键的按下状态
-const { space, down, up, left, right, n, p, m, Escape, f } = $(useMagicKeys({ passive: false, onEventFired: onEventFired }))
+const { space, down, up, left, right, n, p, m, Escape, f, shift, alt, ctrl } = $(useMagicKeys({ passive: false, onEventFired: onEventFired }))
 
 // 快捷键监听
 watchEffect(() => {
-  if (!audio || !playMusicStore.getPlayMusicId || !notUsingInput) return
+  
+  if (!audio || !playMusicStore.getPlayMusicId || !notUsingInput || shift || alt) return
   // 空格 暂停音乐
   if (space) togglePlayMusic()
   // 下键 降低音量
@@ -350,12 +351,12 @@ const playMusicUrl = computed(() => {
     :max="audioInfo.duration | 0"
     :interval="1"
     :min="0"
-    tooltip='hover'
+    tooltip="hover"
     :use-keyboard="false"
     :lazy="true"
     :tooltip-formatter="tooltipFormatter"
     :processStyle="{ backgroundColor: 'rgba(71,86,255)' }"
-    :tooltipStyle="{ backgroundColor: 'rgba(71,86,255)',borderColor:'rgba(71,86,255)'}"
+    :tooltipStyle="{ backgroundColor: 'rgba(71,86,255)', borderColor: 'rgba(71,86,255)' }"
     :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
     @change="change"
     :dragOnClick="true"
@@ -466,8 +467,7 @@ const playMusicUrl = computed(() => {
             <!-- 上一首 -->
             <Icon :iconName="'i-carbon:skip-back-filled'" @click.stop="prevPlayMusic"> </Icon>
             <!-- 播放 -->
-            <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic">
-            </Icon>
+            <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic"> </Icon>
             <!-- 暂停 -->
             <Icon iconName="i-mingcute-play-fill" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic"> </Icon>
             <!-- 下一首 -->
@@ -476,7 +476,7 @@ const playMusicUrl = computed(() => {
             <!-- </div> -->
           </div>
           <div class="right" @click.stop="null" flex="~" items-center space-x-3 justify-end>
-            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{'active':route.name==='next'}"/> 
+            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{ active: route.name === 'next' }" />
             <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-carbon:volume-mute-filled" :w="4" :h="4" @click="onUnmute" />
             <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-carbon:volume-down-filled" :w="4" :h="4" @click="onMute" />
             <Icon v-else iconName="i-carbon:volume-up-filled" :w="4" :h="4" @click="onMute" />
@@ -489,8 +489,8 @@ const playMusicUrl = computed(() => {
               tooltip="none"
               :use-keyboard="false"
               :tooltip-formatter="tooltipFormatter"
-              :processStyle="{ backgroundColor: 'rgba(71,86,255)'}"
-              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)'}"
+              :processStyle="{ backgroundColor: 'rgba(71,86,255)' }"
+              :railStyle="{ backgroundColor: 'rgba(204,204,204,.3)' }"
               @change="changeVolume"
               :dragOnClick="true"
               :dotSize="[12, 12]"
@@ -545,14 +545,15 @@ const playMusicUrl = computed(() => {
   .volume {
     padding: 5px 0 #{!important};
   }
-  .active.icon{
-    :deep(.i-zondicons-music-playlist){
+  .active.icon {
+    :deep(.i-zondicons-music-playlist) {
       @apply bg-#335eea;
     }
   }
 }
 
-.footerContent,.fullScreenPlayer {
+.footerContent,
+.fullScreenPlayer {
   @apply w-full px-10%;
 }
 .slideUp {
