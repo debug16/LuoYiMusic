@@ -2,18 +2,19 @@
 import { search } from '~/api/search'
 import { songDetail } from '~/api/song'
 import { album } from '~/api/album'
-import { artists as artist} from '~/api/singer'
+import { artists as artist } from '~/api/singer'
 import { imgUrlSize } from '~/utils/img'
 import { isSongsFree, formatSongsSinger } from '~/utils/songs'
 import { usePlayMusicStore } from '~/stores/playMusic'
 import { onBeforeRouteUpdate } from 'vue-router'
+import { playlistDetail } from '~/api/playlist'
 
 interface Props {
   keywords: string
 }
 
 const playMusicStore = usePlayMusicStore()
-const route = useRouter()
+const router = useRouter()
 
 const { keywords } = defineProps<Props>()
 
@@ -23,6 +24,8 @@ let artists: any = $ref()
 let albums: any = $ref()
 // 歌曲
 let songs: any = $ref()
+// 歌单
+let playlists: any = $ref()
 
 const getSearch = (keyword: string) => {
   // 搜索艺人
@@ -52,6 +55,11 @@ const getSearch = (keyword: string) => {
       if (songsTemp.code === 200) return (songs = songsTemp.songs)
       else throw '出错了'
     })
+  // @ts-ignore
+  // 搜索歌单
+  search({ keywords: keyword, type: 1000, limit: 12 }).then((res: any) => {
+    if (res.code === 200) playlists = res.result.playlists
+  })
 }
 
 onBeforeMount(() => getSearch(keywords))
@@ -103,6 +111,30 @@ const onPlayArtist = (id: number) => {
   })
 }
 
+// 获取歌单事件
+const onPlayList = (playlistId: number) => {
+  // 获取歌单详情
+  playlistDetail(playlistId).then(res => {
+    let playlist: Array<any> = []
+
+    if (res.code === 200) playlist = res.playlist?.tracks
+
+    // 如果歌单列表里没有音乐
+    if (playlist?.length <= 0) return
+    // 找到免费的歌曲
+    const song = playlist.find((songs: { fee: number; id: any }) => {
+      if (isSongsFree(songs.fee)) {
+        playMusicStore.setPlayMusicId(songs.id)
+        playMusicStore.setPlayMusic(songs)
+        return true
+      }
+      return false
+    })
+    // 如果歌单列表里有免费音乐 就放入待播放的音乐列表
+    if (song) playMusicStore.setPlayMusicList(playlist)
+  })
+}
+
 // 双击播放事件
 const dblclickPlayMusic = (song: any) => {
   /**
@@ -129,8 +161,8 @@ const dblclickPlayMusic = (song: any) => {
   <div class="search" py-10 space-y-20>
     <div class="top" space-x-16 flex="~">
       <div class="artists" w="50%">
-        <div class="artist-title" flex justify-between items-center mb-4>
-          <h1 text-xl font-600>艺人</h1>
+        <div class="artist-title" flex justify-between items-center mb-6>
+          <h1 text-2xl font-600>艺人</h1>
           <div class="more" text-sm>查看更多</div>
         </div>
         <div class="artist-list" grid-cols-3 gap-x-4 grid>
@@ -141,15 +173,15 @@ const dblclickPlayMusic = (song: any) => {
             shape="circle"
             :title-center="true"
             :title="artist?.name"
-            @click-img="route.push(`/artist/${artist.id}`)"
-            @click-title="route.push(`/artist/${artist.id}`)"
+            @click-img="router.push(`/artist/${artist.id}`)"
+            @click-title="router.push(`/artist/${artist.id}`)"
             @click-play="onPlayArtist(artist.id)"
           ></FrontCover>
         </div>
       </div>
       <div class="albums" w="50%">
-        <div class="albums-title" flex justify-between items-center mb-4>
-          <h1 text-xl font-600>专辑</h1>
+        <div class="albums-title" flex justify-between items-center mb-6>
+          <h1 text-2xl font-600>专辑</h1>
           <div class="more" text-sm>查看更多</div>
         </div>
         <div class="artist-list" grid-cols-3 gap-x-4 grid>
@@ -157,19 +189,18 @@ const dblclickPlayMusic = (song: any) => {
             v-for="(album, i) in albums"
             :key="i"
             :src="imgUrlSize(album?.picUrl, 512)"
-            shape="circle"
             :title-center="true"
             :title="album?.name"
-            @click-img="route.push(`/album/${album.id}`)"
-            @click-title="route.push(`/album/${album.id}`)"
+            @click-img="router.push(`/album/${album.id}`)"
+            @click-title="router.push(`/album/${album.id}`)"
             @click-play="onPlayAlbum(album.id)"
           ></FrontCover>
         </div>
       </div>
     </div>
     <div class="songs">
-      <div class="songs-title" flex justify-between items-center mb-4>
-        <h1 text-xl font-600>歌曲</h1>
+      <div class="songs-title" flex justify-between items-center mb-6>
+        <h1 text-2xl font-600>歌曲</h1>
         <div class="more" text-sm>查看更多</div>
       </div>
       <!-- 歌曲列表 -->
@@ -187,6 +218,22 @@ const dblclickPlayMusic = (song: any) => {
           @songs-dblclick="dblclickPlayMusic(song)"
           :active="song.id == playMusicStore.getPlayMusicId"
         />
+      </div>
+    </div>
+    <div class="">
+      <div class="albums-title" flex justify-between items-center mb-8>
+        <h1 text-2xl font-600>歌单</h1>
+        <div class="more" text-sm>查看更多</div>
+      </div>
+      <div class="" grid grid-cols-6 grid-flow-row gap-x-4 gap-y-8>
+        <FrontCover
+        v-for="playlist in playlists" :key="playlist.id"
+          :src="imgUrlSize(playlist.coverImgUrl, 512)"
+          @click-img="router.push(`/playlist/${playlist.id}`)"
+          @click-title="router.push(`/playlist/${playlist.id}`)"
+          @click-play="onPlayList(playlist.id)"
+          :title="playlist.name"
+        ></FrontCover>
       </div>
     </div>
   </div>
