@@ -163,7 +163,7 @@ const dblclickPlayMusic = (song: any) => {
       <div class="artists" w="50%">
         <div class="artist-title" flex justify-between items-center mb-6>
           <h1 text-2xl font-600>艺人</h1>
-          <div class="more" text-sm>查看更多</div>
+          <!-- <div class="more" text-sm>查看更多</div> -->
         </div>
         <div class="artist-list" grid-cols-3 gap-x-4 grid>
           <FrontCover
@@ -182,7 +182,7 @@ const dblclickPlayMusic = (song: any) => {
       <div class="albums" w="50%">
         <div class="albums-title" flex justify-between items-center mb-6>
           <h1 text-2xl font-600>专辑</h1>
-          <div class="more" text-sm>查看更多</div>
+          <!-- <div class="more" text-sm>查看更多</div> -->
         </div>
         <div class="artist-list" grid-cols-3 gap-x-4 grid>
           <FrontCover
@@ -201,7 +201,7 @@ const dblclickPlayMusic = (song: any) => {
     <div class="songs">
       <div class="songs-title" flex justify-between items-center mb-6>
         <h1 text-2xl font-600>歌曲</h1>
-        <div class="more" text-sm>查看更多</div>
+        <!-- <div class="more" text-sm>查看更多</div> -->
       </div>
       <!-- 歌曲列表 -->
       <div class="songs-list" gap-2 grid xl:grid-cols-4 grid-cols-3 lg:grid-cols-3>
@@ -223,7 +223,7 @@ const dblclickPlayMusic = (song: any) => {
     <div class="">
       <div class="albums-title" flex justify-between items-center mb-8>
         <h1 text-2xl font-600>歌单</h1>
-        <div class="more" text-sm>查看更多</div>
+        <!-- <div class="more" text-sm>查看更多</div> -->
       </div>
       <div class="" grid grid-cols-6 grid-flow-row gap-x-4 gap-y-8>
         <FrontCover
