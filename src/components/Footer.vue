@@ -335,6 +335,10 @@ watchEffect(() => {
 const playMusicUrl = computed(() => {
   if (playMusicStore.getPlayMusicId) return `https://music.163.com/song/media/outer/url?id=${playMusicStore.getPlayMusicId}.mp3`
 })
+
+const onToggleNext = () => {
+  route.name === 'next' ? router.back() : router.push('/next')
+}
 </script>
 
 <template>
@@ -379,11 +383,6 @@ const playMusicUrl = computed(() => {
           <!-- 进度条 -->
           <div flex="~ row " items-center space-x-4 color="#ccc/50">
             <div text-right>{{ audioInfo.musicCurrentTime }}</div>
-            <!-- <div flex-1 h-1 bg="#ccc" rounded-md class="progress" ref="progressRef" @click="changePlayTime">
-              <div :style="`width:${percentage}%`" h-full bg="#ff9966" rounded-md relative>
-                <div h="2.5" w="2.5" class="progress--circle" ref="progressCircleRef" cursor-pointer transition="all" rounded-lg right="-1.25" bg="#fff" absolute top="-.75"></div>
-              </div>
-            </div> -->
             <vue-slider
               flex-1
               pb-0
@@ -467,16 +466,14 @@ const playMusicUrl = computed(() => {
             <!-- 暂停 -->
             <Icon iconName="i-mingcute-play-fill" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic" title="播放" />
             <!-- 下一首 -->
-            <!-- <div class="icon"> -->
             <Icon iconName="i-carbon:skip-forward-filled" @click.stop="nextPlayMusic" title="下一首"></Icon>
-            <!-- </div> -->
           </div>
           <!-- 其他操作按钮 -->
           <div class="right" @click.stop="null" flex="~" items-center space-x-3 justify-end>
             <Icon v-if="playMusicStore.getPlayModel === 0" title="顺序播放" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-repeat-bold" @click="playMusicStore.setPlayModel(1)" />
             <Icon v-else-if="playMusicStore.getPlayModel === 1" title="随机播放" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-shuffle-bold" @click="playMusicStore.setPlayModel(2)" />
             <Icon v-else-if="playMusicStore.getPlayModel === 2" title="单曲循环" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-repeat-once-bold" @click="playMusicStore.setPlayModel(0)" />
-            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{ active: route.name === 'next' }" title="播放列表" />
+            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="onToggleNext" :class="{ active: route.name === 'next' }" title="播放列表" />
             <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-ph-speaker-simple-x-fill" title="解除静音" :w="4" :h="4" @click="onUnmute" />
             <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-ph-speaker-simple-low-fill" title="开启静音" :w="4" :h="4" @click="onMute" />
             <Icon v-else iconName="i-ph-speaker-simple-high-fill" title="开启静音" :w="4" :h="4" @click="onMute" />
