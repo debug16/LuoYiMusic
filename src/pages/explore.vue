@@ -115,7 +115,11 @@ onBeforeRouteUpdate(route => {
   &:deep(.title) {
     @apply line-clamp-1;
   }
+  &:deep(.images){
+    @apply grow;
+  }
 }
+
 .category .tag {
   &.active {
     @apply color-#335eea bg-#eaeffd;
