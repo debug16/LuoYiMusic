@@ -67,6 +67,7 @@ const nextPlayMusic = () => {
   stopPlayMusic()
   // 获取下一首歌曲信息
   const nextMusic = playMusicStore.getNextPlayMusic
+
   // 没有下一首
   if (!nextMusic) return
 
@@ -197,16 +198,8 @@ watch(
         }
       })
     }
-    // 设置页面标题为歌曲名
-    // title =
     // 暂停播放
     stopPlayMusic()
-
-    // // 检查音乐是否收费
-    // if (!isSongsFree(playMusicStore.activePlayMusic.music.fee)) {
-    //   // 播放下一首
-    //   nextPlayMusic()
-    // }
 
     // 播放栏是否隐藏
     if (injects?.footerHide && _nId) {
@@ -312,7 +305,6 @@ const { space, down, up, left, right, n, p, m, Escape, f, shift, alt, ctrl } = $
 
 // 快捷键监听
 watchEffect(() => {
-  
   if (!audio || !playMusicStore.getPlayMusicId || !notUsingInput || shift || alt) return
   // 空格 暂停音乐
   if (space) togglePlayMusic()
@@ -348,7 +340,7 @@ const playMusicUrl = computed(() => {
 <template>
   <vue-slider
     v-model="audioInfo.currentTime"
-    :max="audioInfo.duration | 0"
+    :max="Math.ceil(audioInfo.duration)"
     :interval="1"
     :min="0"
     tooltip="hover"
@@ -365,6 +357,7 @@ const playMusicUrl = computed(() => {
     :contained="true"
   />
   <div class="footerContent" pb-5px>
+    <!-- 全屏歌词页 -->
     <div :class="{ slideUp: !isFullScreenPlayer }" transition-transform transition-duration-500 class="fullScreenPlayer" color="#fff" fixed w-100vw h-100vh bg="#61394F" z-9000 top-0 left-0>
       <Icon class="player__minimize" z-10 absolute iconName="i-mingcute-down-fill" top-10 right-10 :w="8" :h="8" color="#ccc" @click="isFullScreenPlayer = false" />
       <div class="player__container" w-full h-full flex="~" justify-end>
@@ -395,7 +388,7 @@ const playMusicUrl = computed(() => {
               flex-1
               pb-0
               v-model="audioInfo.currentTime"
-              :max="audioInfo.duration | 0"
+              :max="Math.ceil(audioInfo.duration)"
               :interval="1"
               :min="0"
               tooltip="none"
@@ -445,9 +438,11 @@ const playMusicUrl = computed(() => {
         </div>
       </div>
     </div>
+    <!-- 底部播放栏 -->
     <div h-full>
       <footer class="footer" h-full @click="isFullScreenPlayer = true">
         <div flex="~" relative items-stretch justify-between items-center h-full>
+          <!-- 歌曲信息 -->
           <div class="left" max="w-30%" flex="~" text-2xl space-x-3>
             <div h-50px w-50px flex="shrink-0" class="footer__music--img">
               <img :src="`${playMusicStore.getPlayMusicCover}?param=224y224`" alt="" rounded-lg />
@@ -463,23 +458,28 @@ const playMusicUrl = computed(() => {
               </div>
             </div>
           </div>
+          <!-- 播放按钮 -->
           <div class="center" absolute left="50%" top="50%" translate="-50%" flex="~" items-center text-lg font-800>
             <!-- 上一首 -->
-            <Icon :iconName="'i-carbon:skip-back-filled'" @click.stop="prevPlayMusic"> </Icon>
+            <Icon :iconName="'i-carbon:skip-back-filled'" @click.stop="prevPlayMusic" title="上一首" />
             <!-- 播放 -->
-            <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic"> </Icon>
+            <Icon v-show="isPlaying" iconName="i-carbon:pause-filled" mx-4 :w="9" :h="9" @click.stop="stopPlayMusic" title="暂停" />
             <!-- 暂停 -->
-            <Icon iconName="i-mingcute-play-fill" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic"> </Icon>
+            <Icon iconName="i-mingcute-play-fill" :w="9" :h="9" v-show="!isPlaying" mx-4 @click.stop="playMusic" title="播放" />
             <!-- 下一首 -->
             <!-- <div class="icon"> -->
-            <Icon iconName="i-carbon:skip-forward-filled" @click.stop="nextPlayMusic"></Icon>
+            <Icon iconName="i-carbon:skip-forward-filled" @click.stop="nextPlayMusic" title="下一首"></Icon>
             <!-- </div> -->
           </div>
+          <!-- 其他操作按钮 -->
           <div class="right" @click.stop="null" flex="~" items-center space-x-3 justify-end>
-            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{ active: route.name === 'next' }" />
-            <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-carbon:volume-mute-filled" :w="4" :h="4" @click="onUnmute" />
-            <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-carbon:volume-down-filled" :w="4" :h="4" @click="onMute" />
-            <Icon v-else iconName="i-carbon:volume-up-filled" :w="4" :h="4" @click="onMute" />
+            <Icon v-if="playMusicStore.getPlayModel === 0" title="顺序播放" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-repeat-bold" @click="playMusicStore.setPlayModel(1)" />
+            <Icon v-else-if="playMusicStore.getPlayModel === 1" title="随机播放" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-shuffle-bold" @click="playMusicStore.setPlayModel(2)" />
+            <Icon v-else-if="playMusicStore.getPlayModel === 2" title="单曲循环" class="playModel" :w="4.5" :h="4.5" icon-name="i-ph-repeat-once-bold" @click="playMusicStore.setPlayModel(0)" />
+            <Icon :w="4" :h="4" icon-name="i-zondicons-music-playlist" @click="router.push('/next')" :class="{ active: route.name === 'next' }" title="播放列表" />
+            <Icon v-if="audio?.muted === true || audio?.volume <= 0" iconName="i-ph-speaker-simple-x-fill" title="解除静音" :w="4" :h="4" @click="onUnmute" />
+            <Icon v-else-if="audio?.volume <= 0.5 && audio?.volume > 0" iconName="i-ph-speaker-simple-low-fill" title="开启静音" :w="4" :h="4" @click="onMute" />
+            <Icon v-else iconName="i-ph-speaker-simple-high-fill" title="开启静音" :w="4" :h="4" @click="onMute" />
             <vue-slider
               class="volume"
               v-model="audioVolume"
@@ -498,7 +498,7 @@ const playMusicUrl = computed(() => {
               :width="100"
               :contained="true"
             />
-            <Icon iconName="i-mingcute-up-fill" :w="5" :h="5" @click="isFullScreenPlayer = true" />
+            <Icon iconName="i-mingcute-up-fill" :w="5" :h="5" @click="isFullScreenPlayer = true" title="全屏歌词" />
             <div class="audio" hidden>
               <audio
                 ref="audio"
@@ -506,6 +506,7 @@ const playMusicUrl = computed(() => {
                 :src="playMusicUrl"
                 autoplay
                 controls
+                :loop="playMusicStore.getPlayModel === 2"
                 @ended="endPlayMusic"
                 @play="startPlayMusic"
                 @error="stopPlayMusic"
@@ -546,7 +547,12 @@ const playMusicUrl = computed(() => {
     padding: 5px 0 #{!important};
   }
   .active.icon {
-    :deep(.i-zondicons-music-playlist) {
+    :deep(div) {
+      @apply bg-#335eea;
+    }
+  }
+  .playModel.icon {
+    :deep(div) {
       @apply bg-#335eea;
     }
   }
