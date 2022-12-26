@@ -1,3 +1,9 @@
+/**
+ * 随机获取一定数量的数据
+ * @param arr 数组
+ * @param n 获取个数
+ * @returns 
+ */
 export const getRandom = (arr: Array<any>, n: number) => {
   const copy = arr.slice();  // 复制数组以避免更改原始数组
   const result = [];
