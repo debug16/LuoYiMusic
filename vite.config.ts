@@ -86,9 +86,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'Vitesse',
-        short_name: 'Vitesse',
+        name: 'LuoYiMusic',
+        short_name: 'LuoYiMusic',
         theme_color: '#ffffff',
+        scope:'/',
         icons: [
           {
             src: '/pwa-192x192.png',

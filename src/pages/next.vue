@@ -3,6 +3,7 @@ import { usePlayMusicStore } from '~/stores/playMusic'
 import { imgUrlSize } from '~/utils/img'
 import { formatSongsSinger, isSongsFree } from '~/utils/songs'
 
+const router = useRouter()
 const playMusicStore = usePlayMusicStore()
 
 const playList = playMusicStore.getPlayList
@@ -87,6 +88,7 @@ const dblclickPlayMusic = (songs: any) => {
           :songs-time="songs.dt"
           :img-src="imgUrlSize(songs?.al.picUrl, 224)"
           @songs-dblclick="dblclickPlayMusic(songs)"
+        @click-album="router.push(`/album/${songs.al.id}`)"
         ></SongsInfo>
       </div>
     </div>

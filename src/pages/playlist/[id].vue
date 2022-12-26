@@ -10,7 +10,7 @@ const props = defineProps({
     required: true,
   },
 })
-
+const router = useRouter()
 const playMusicStore = usePlayMusicStore()
 // 歌单详情
 let songsListDetails: any | undefined = $ref()
@@ -106,6 +106,7 @@ const imgUrl = (url: string, param?: number | string) => {
         :songs-time="songs.dt"
         :img-src="imgUrl(songs?.al.picUrl, 224)"
         @songs-dblclick="dblclickPlayMusic(songs)"
+        @click-album="router.push(`/album/${songs.al.id}`)"
       ></SongsInfo>
     </div>
   </div>
