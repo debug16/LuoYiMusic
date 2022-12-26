@@ -34,6 +34,7 @@
     "@iconify-json/icon-park-twotone": "^1.1.5",
     "@iconify-json/material-symbols": "^1.1.26",
     "@iconify-json/mingcute": "^1.1.3",
+    "@iconify-json/ph": "^1.1.3",
     "@iconify-json/zondicons": "^1.1.3",
     "@intlify/vite-plugin-vue-i18n": "^4.0.0",
     "@types/lodash": "^4.14.186",
