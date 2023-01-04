@@ -39,7 +39,7 @@ const dblclickPlayMusic = (songs: any) => {
    * 8: 低音质免费
    * https://github.com/Binaryify/NeteaseCloudMusicApi/issues/1121
    */
-  if (isSongsFree(songs.privilege.fee)) {
+  if (isSongsFree(songs.fee)) {
     // 设置播放的音乐 id
     playMusicStore.setPlayMusicId(songs?.id)
 
@@ -140,7 +140,7 @@ const briefDesc = computed(() => {
           rounded-xl
           hover="bg-#eee/50"
           :img-src="imgUrlSize(song.al?.picUrl, 100)"
-          :available="isSongsFree(song.privilege.fee)"
+          :available="isSongsFree(song.fee)"
           :name="song?.name"
           :artist="formatSongsSinger(song.ar)"
           :active="song.id == playMusicStore.getPlayMusicId"
