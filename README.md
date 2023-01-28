@@ -1,5 +1,5 @@
 # LuoYiMusic
-基于 vue3 + vite + pinia + vue-router4 实现的一个简约美观的音乐播放平台，使用 pake 打包桌面端，只有1M+，欢迎大家体验和start
+基于 vue3 + vite + pinia + vue-router4 实现的一个简约美观的音乐播放平台，使用 pake 打包桌面端，只有1M+，欢迎大家体验和star
 ## 介绍
   一个简约的音乐播放平台，满足日常听歌需要，页面模仿的 [YesPlayMusic](https://github.com/qier222/YesPlayMusic)
 ## 图片
