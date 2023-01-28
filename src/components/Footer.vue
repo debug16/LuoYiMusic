@@ -557,7 +557,7 @@ const onToggleNext = () => {
 
 .footerContent,
 .fullScreenPlayer {
-  @apply w-full px-10%;
+  @apply w-full xl:px-10% lg:px-5% md:px-3%;
 }
 .slideUp {
   @apply translate-y-100%;
