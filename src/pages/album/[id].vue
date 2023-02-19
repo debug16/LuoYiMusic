@@ -18,7 +18,6 @@ onBeforeMount(() => {
     if (res.code === 200) {
       albumR = res
     }
-    console.log(albumR)
   })
 })
 
